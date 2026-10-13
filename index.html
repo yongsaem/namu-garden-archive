@@ -9,16 +9,23 @@
             font-family: 'Malgun Gothic', sans-serif; 
             padding: 20px; 
             margin: 0;
-            min-height: 100vh; /* 화면 전체 높이 차지 */
-            
-            /* ★ 수정한 부분 */
-            background-size: contain; /* 이미지가 절대 잘리지 않고 원본 비율 그대로 쏙 들어가게 함 */
-            background-position: center 70%; /* 이미지를 화면 한가운데 배치 */
-            background-attachment: fixed; 
-            background-repeat: no-repeat; /* 이미지가 바둑판처럼 반복되지 않게 함 */
-            background-color: #f0f2f5; /* 이미지가 없는 빈 공간을 채워줄 깔끔한 배경색 */
-            
-            transition: background-image 0.4s ease-in-out; 
+            min-height: 100vh;
+            background-color: #f0f2f5; /* 배경색만 남기고 나머지 삭제 */
+        }
+    
+        /* ★ 새로 추가하는 완벽 고정 배경 레이어 */
+        #bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -999; /* 모든 요소보다 제일 뒤로 */
+            background-size: contain; 
+            background-position: center 70%; /* 선생님이 설정하신 70% */
+            background-repeat: no-repeat;
+            transition: background-image 0.4s ease-in-out;
+            pointer-events: none; /* 클릭 방해 금지 */
         }
         
         /* 툴 영역이 화려한 배경 때문에 안 보일 수 있으니, 선택창 뒤에 반투명 박스를 깔아줍니다 */
