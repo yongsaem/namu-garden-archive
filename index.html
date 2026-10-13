@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>캐릭터 선택 시뮬레이터</title>
+    <style>
+        /* 깔끔한 공무용/사내 툴 스타일의 CSS */
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            padding: 20px; 
+            margin: 0;
+            min-height: 100vh; /* 화면 전체 높이 차지 */
+            
+            /* ★ 수정한 부분 */
+            background-size: contain; /* 이미지가 절대 잘리지 않고 원본 비율 그대로 쏙 들어가게 함 */
+            background-position: center center; /* 이미지를 화면 한가운데 배치 */
+            background-attachment: fixed; 
+            background-repeat: no-repeat; /* 이미지가 바둑판처럼 반복되지 않게 함 */
+            background-color: #f0f2f5; /* 이미지가 없는 빈 공간을 채워줄 깔끔한 배경색 */
+            
+            transition: background-image 0.4s ease-in-out; 
+        }
+        
+        /* 툴 영역이 화려한 배경 때문에 안 보일 수 있으니, 선택창 뒤에 반투명 박스를 깔아줍니다 */
+        #breadcrumb-area, #dropdown-area {
+            background-color: rgba(255, 255, 255, 0.85); /* 85% 불투명도의 흰색 박스 */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: inline-block; /* 내용물 크기만큼만 박스 생성 */
+            min-width: 300px;
+        }
+        /* 선택 완료된 항목들이 작게 표시되는 영역 */
+        #breadcrumb-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            min-height: 24px;
+        }
+
+        /* 작게 변한 선택 항목의 디자인 */
+        .breadcrumb-item {
+            font-size: 13px;
+            color: #555;
+            background-color: #f1f1f1;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer; /* 클릭 가능함을 표시 */
+            border: 1px solid #ddd;
+            transition: background-color 0.2s;
+        }
+
+        /* 마우스를 올렸을 때의 시각적 피드백 */
+        .breadcrumb-item:hover {
+            background-color: #e2e2e2;
+            text-decoration: line-through; /* 누르면 취소(돌아가기)된다는 직관적 표시 */
+        }
+
+        /* 현재 선택해야 하는 드롭다운 */
+        select {
+            padding: 8px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+
+        /* 라벨 텍스트 */
+        .step-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 레이아웃 컨테이너 (사이트 자체 스크롤 유도를 위해 absolute 사용) -->
+    <div style="position: relative; width: 100%; min-height: 120vh;">
+
+        <!-- 1. 브레드크럼 -->
+        <div id="breadcrumb-area" style="font-size: 13px; margin-bottom: 5px; padding: 10px;"></div>
+
+        <!-- 2. 중앙 드롭다운 (선택창) -->
+        <div id="dropdown-area" style="padding: 0 10px;">
+            <span class="step-label" id="step-title" style="font-size: 15px;">성급 선택</span>
+            <select id="current-select" style="padding: 4px; font-size: 13px;"></select>
+            <input type="text" id="relic-input" list="relic-datalist" style="display: none; padding: 4px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; min-width: 150px;" placeholder="직접 입력/선택">
+            <datalist id="relic-datalist"></datalist>
+        </div>
+
+        <!-- 3. 캐릭터 이미지 공간 -->
+        <div id="character-info-area" style="margin-top: 10px; text-align: center;"></div>
+
+        <!-- ★ [왼쪽 패널] 최종 합산 스탯 (상세 보기 체크박스 추가) -->
+        <div id="stat-panel" style="display: none; position: absolute; left: 15px; top: 140px; background-color: rgba(20, 25, 30, 0.9); color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.8); min-width: 320px; backdrop-filter: blur(5px); z-index: 100;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #555; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #ffd700; font-size: 22px;">📊 최종 스탯 <br><span style="font-size: 13px; color:#aaa; font-weight:normal;">(마우스 호버로 상세 수치 확인)</span></h3>
+                <label style="font-size: 13px; color: #ddd; cursor: pointer; display: flex; align-items: center; gap: 5px; margin-top: 5px;">
+                    <input type="checkbox" id="toggle-detail-stats" style="cursor: pointer; width: 16px; height: 16px;"> 상세 보기
+                </label>
+            </div>
+            <div id="stat-list" style="font-size: 18px; line-height: 2.2;"></div>
+        </div>
+
+        <!-- ★ [오른쪽 패널] 1x6 세로형 유물 그리드 (가로 폭만 축소) -->
+        <div id="relic-grid-panel" style="display: none; position: absolute; right: 15px; top: 140px; background-color: rgba(20, 25, 30, 0.85); color: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 100; width: 280px; box-sizing: border-box;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #555; padding-bottom: 4px; margin-bottom: 6px;">
+                <h3 style="margin: 0; color: #ffd700; font-size: 13px;">🛡️ 유물 옵션 세팅</h3>
+                <button id="reset-all-btn" style="font-size: 10px; padding: 2px 6px; background: #d9534f; color: #fff; border: none; border-radius: 3px; cursor: pointer;">전체 초기화</button>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+                
+                <!-- 1. 머리 -->
+                <div class="relic-box" data-fixed-main="체력" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">머리</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <div style="font-size: 9px; margin-bottom: 3px;">주옵: <span style="font-weight: bold; color: #fff;">체력 (705)</span></div>
+                    <div class="substats-container" id="sub-head" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+                <!-- 2. 장갑 -->
+                <div class="relic-box" data-fixed-main="공격력" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">장갑</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <div style="font-size: 9px; margin-bottom: 3px;">주옵: <span style="font-weight: bold; color: #fff;">공격력 (352)</span></div>
+                    <div class="substats-container" id="sub-hands" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+                <!-- 3. 상의 -->
+                <div class="relic-box" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">상의</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <!-- 가로폭 1/3 토막 (width: 26%) -->
+                    <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                        <span>주옵:</span>
+                        <select id="grid-main-body" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
+                    </div>
+                    <div class="substats-container" id="sub-body" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+                <!-- 4. 신발 -->
+                <div class="relic-box" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">신발</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <!-- 가로폭 1/3 토막 (width: 26%) -->
+                    <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                        <span>주옵:</span>
+                        <select id="grid-main-feet" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
+                    </div>
+                    <div class="substats-container" id="sub-feet" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+                <!-- 5. 구체 -->
+                <div class="relic-box" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">구체</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <!-- 가로폭 1/3 토막 (width: 26%) -->
+                    <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                        <span>주옵:</span>
+                        <select id="grid-main-sphere" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
+                    </div>
+                    <div class="substats-container" id="sub-sphere" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+                <!-- 6. 매듭 -->
+                <div class="relic-box" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <h4 style="margin: 0; color: #63b3ed; font-size: 11px;">매듭</h4>
+                            <button class="reset-piece-btn" style="font-size: 8px; padding: 1px 3px; cursor: pointer; background: #666; border: none; color: #fff; border-radius: 2px;">초기화</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="upgrade-counter" style="font-size: 8px; color: #aaa;">4회 남음</span>
+                            <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
+                        </div>
+                    </div>
+                    <!-- 가로폭 1/3 토막 (width: 26%) -->
+                    <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                        <span>주옵:</span>
+                        <select id="grid-main-rope" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
+                    </div>
+                    <div class="substats-container" id="sub-rope" style="display: flex; flex-direction: column; gap: 1px;"></div>
+                </div>
+
+            </div>
+        </div>
+    </div> <!-- // 레이아웃 컨테이너 끝 -->
+
+    <script type="module">
+        import { CharacterDB } from './DB/캐릭터/index.js';
+        import { LightConeDB } from './DB/광추/index.js';
+        import { RelicDB } from './DB/유물/index.js';
+
+        const characterDB = Object.values(CharacterDB);
+        const lightConeDB = Object.values(LightConeDB);
+        const relicDB = Object.values(RelicDB);
+
+        // ==========================================
+        // ★ 데이터 세팅
+        // ==========================================
+        const userMainOptions = {
+            body: { "체력%": 43.2, "치유량 보너스": 34.5, "공격력%": 43.2, "방어력%": 54.0, "치명타 확률": 32.4, "치명타 피해": 64.8, "효과 명중": 43.2 },
+            feet: { "체력%": 43.2, "속도": 25.0, "공격력%": 43.2, "방어력%": 54.0 },
+            sphere: { "체력%": 43.2, "공격력%": 43.2, "방어력%": 54.0, "물리 속성 피해 보너스": 38.8, "화염 속성 피해 보너스": 38.8, "얼음 속성 피해 보너스": 38.8, "번개 속성 피해 보너스": 38.8, "바람 속성 피해 보너스": 38.8, "양자 속성 피해 보너스": 38.8, "허수 속성 피해 보너스": 38.8 },  
+            rope: { "체력%": 43.2, "에너지 회복효율": 19.4, "격파 특수효과": 64.8, "공격력%": 43.2, "방어력%": 54.0 }
+        };
+
+        const userSubstatValues = {
+            "체력": [33, 38, 42], "공격력": [16, 19, 21], "방어력": [16, 19, 21],          
+            "체력%": [3.4, 3.8, 4.3], "공격력%": [3.4, 3.8, 4.3], "방어력%": [4.3, 4.8, 5.4],         
+            "속도": [2.0, 2.3, 2.6], "격파 특수효과": [5.1, 5.8, 6.4], "효과 명중": [3.4, 3.8, 4.3],       
+            "효과 저항": [3.4, 3.8, 4.3], "치명타 확률": [2.5, 2.9, 3.2], "치명타 피해": [5.1, 5.8, 6.4] 
+        };
+
+        const defaultBaseStats = {
+            "치명타 확률": 5.0, "치명타 피해": 50.0, "에너지 회복효율": 100.0,
+            "격파 특수효과": 0, "치유량 보너스": 0, "효과 명중": 0, "효과 저항": 0
+        };
+
+        // 스탯 정렬 순서 우선순위
+        const statPriority = ["체력", "공격력", "방어력", "속도", "치명타 확률", "치명타 피해"];
+
+        // ==========================================
+        // ★ UI 옵션 리스트 생성기
+        // ==========================================
+        const optionsSubstat = ["선택안함", "체력", "공격력", "방어력", "체력%", "공격력%", "방어력%", "속도", "격파 특수효과", "효과 명중", "효과 저항", "치명타 확률", "치명타 피해"];
+
+        // 주옵션 드롭다운 생성 (옵션명 + 수치 표기)
+        function populateMainSelect(selectId, dataObj) {
+            const selectEl = document.getElementById(selectId);
+            if (!selectEl) return;
+            selectEl.innerHTML = "";
+            Object.entries(dataObj).forEach(([key, val]) => {
+                const isPercent = key.includes("%") || key.includes("확률") || key.includes("피해") || key.includes("효율") || key.includes("명중");
+                const displayVal = isPercent ? val + "%" : val;
+                selectEl.innerHTML += `<option value="${key}">${key} (${displayVal})</option>`;
+            });
+        }
+
+        // 부옵션 라인 생성기 (절대 안 늘어나게 족쇄 채움)
+        function createSubstats(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = "";
+            for (let i = 1; i <= 4; i++) {
+                // 종류 칸: 115px (글씨가 커졌으므로 '격파 특수효과'도 넉넉히 들어감)
+                let typeSelect = `<select class="sub-type-select" style="width: 115px; min-width: 115px; max-width: 115px; flex: none; padding: 0 2px; font-size: 11px; background-color: #f0f0f0; border-radius: 2px; border: none; color: #000; height: 20px; box-sizing: border-box;">`;
+                optionsSubstat.forEach(opt => { typeSelect += `<option value="${opt}">${opt}</option>`; });
+                typeSelect += `</select>`;
+                
+                // 수치 칸: 55px
+                let valSelect = `<select class="sub-val-select" style="width: 55px; min-width: 55px; max-width: 55px; flex: none; padding: 0 2px; font-size: 11px; background-color: #f0f0f0; border-radius: 2px; border: none; color: #000; height: 20px; box-sizing: border-box;">
+                    <option value="0">-</option>
+                </select>`;
+
+                // 강화 횟수 칸: 45px
+                let upSelect = `<select class="sub-up-select" style="width: 45px; min-width: 45px; max-width: 45px; flex: none; padding: 0 2px; font-size: 11px; background-color: #ffd700; border-radius: 2px; border: none; color: #000; font-weight: bold; height: 20px; box-sizing: border-box;">
+                    <option value="0">+0</option><option value="1">+1</option><option value="2">+2</option>
+                    <option value="3">+3</option><option value="4">+4</option><option value="5">+5</option>
+                </select>`;
+                
+                container.innerHTML += `
+                    <div class="substat-wrapper" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 4px;">
+                        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
+                            <span style="font-size: 11px; color: #ccc; width: 12px; text-align: center; flex: none;">${i}</span>
+                            <div style="display: flex; justify-content: flex-start; gap: 4px; flex: none;">
+                                ${typeSelect}${valSelect}${upSelect}
+                            </div>
+                        </div>
+                        <div class="substat-upgrades-container" style="display: flex; justify-content: flex-start; gap: 2px; margin-top: 4px; margin-left: 18px; flex-wrap: wrap;"></div>
+                    </div>
+                `;
+            }
+        }
+
+        populateMainSelect("grid-main-body", userMainOptions.body);
+        populateMainSelect("grid-main-feet", userMainOptions.feet);
+        populateMainSelect("grid-main-sphere", userMainOptions.sphere);
+        populateMainSelect("grid-main-rope", userMainOptions.rope);
+        ["sub-head", "sub-hands", "sub-body", "sub-feet", "sub-sphere", "sub-rope"].forEach(createSubstats);
+
+        // ==========================================
+        // ★ 부옵션/강화 중복 및 초과 방지 로직 (비활성화가 아닌 삭제식)
+        // ==========================================
+        function refreshSelectStates(box) {
+            const mainSelect = box.querySelector('.main-stat-select');
+            let mainVal = mainSelect ? mainSelect.value : box.dataset.fixedMain;
+            
+            const subTypes = Array.from(box.querySelectorAll('.sub-type-select'));
+            const selectedSubs = subTypes.map(s => s.value).filter(v => v !== "선택안함");
+
+            // 1. 부옵션 종류 드롭다운 (삭제식)
+            subTypes.forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = ""; // 기존 옵션 싹 다 지우기
+                select.add(new Option("선택안함", "선택안함"));
+                
+                optionsSubstat.forEach(opt => {
+                    if (opt === "선택안함") return;
+                    // 현재 선택된 값이거나, 주옵과 겹치지 않으면서 다른 줄에서도 안 고른 옵션만 '생성'
+                    if (opt === currentVal || (opt !== mainVal && !selectedSubs.includes(opt))) {
+                        select.add(new Option(opt, opt));
+                    }
+                });
+                select.value = currentVal;
+            });
+
+            // 2. 강화 가능 횟수 제한 (마이너스 방지 & 삭제식)
+            const chk = box.querySelector('.four-line-chk');
+            const maxUpgrades = (chk && chk.checked) ? 5 : 4;
+            const upSelects = Array.from(box.querySelectorAll('.sub-up-select'));
+            
+            let totalUpgrades = 0;
+            upSelects.forEach(sel => { totalUpgrades += parseInt(sel.value) || 0; });
+            
+            let remain = maxUpgrades - totalUpgrades;
+            
+            upSelects.forEach(select => {
+                const currentVal = parseInt(select.value) || 0;
+                const typeVal = select.closest('.substat-wrapper').querySelector('.sub-type-select').value;
+                
+                let allowedMax = 0;
+                if (typeVal !== "선택안함") {
+                    // 현재 선택한 수치 + 남은 횟수까지만 옵션 생성 (게임 최대치인 5까지만)
+                    allowedMax = Math.min(5, currentVal + Math.max(0, remain));
+                }
+                
+                select.innerHTML = ""; // 기존 횟수 옵션 싹 다 지우기
+                for (let i = 0; i <= allowedMax; i++) {
+                    select.add(new Option(`+${i}`, i));
+                }
+                
+                // 만약 4줄 체크 해제 등으로 횟수가 초과되었다면, 최대 허용치로 강제 교정
+                if (currentVal > allowedMax) {
+                    select.value = allowedMax;
+                    // 값이 강제로 변했으므로 변경 이벤트 발생시켜 연쇄 처리
+                    setTimeout(() => select.dispatchEvent(new Event('change', {bubbles:true})), 0);
+                } else {
+                    select.value = currentVal;
+                }
+            });
+
+            // 3. 최종 카운터 텍스트 갱신
+            const counter = box.querySelector('.upgrade-counter');
+            if(counter) {
+                let finalUpgrades = 0;
+                upSelects.forEach(sel => { finalUpgrades += parseInt(sel.value) || 0; });
+                const finalRemain = maxUpgrades - finalUpgrades;
+                counter.innerText = `${finalRemain}회 남음`;
+                counter.style.color = '#aaa'; 
+            }
+        }
+
+        // ==========================================
+        // ★ 실시간 이벤트 모니터링 (강화 롤링 & 리셋)
+        // ==========================================
+        document.addEventListener('change', function(e) {
+            const target = e.target;
+            const box = target.closest('.relic-box');
+
+            if (target && target.classList.contains('sub-type-select')) {
+                const wrapper = target.closest('.substat-wrapper');
+                const valSelect = wrapper.querySelector('.sub-val-select');
+                const upSelect = wrapper.querySelector('.sub-up-select');
+                const upContainer = wrapper.querySelector('.substat-upgrades-container');
+                const selectedType = target.value;
+                
+                valSelect.innerHTML = "";
+                upSelect.value = "0"; 
+                upContainer.innerHTML = ""; 
+
+                if (selectedType === "선택안함") {
+                    valSelect.innerHTML = `<option value="0">-</option>`;
+                } else if (userSubstatValues[selectedType]) {
+                    userSubstatValues[selectedType].forEach(val => {
+                        valSelect.innerHTML += `<option value="${val}">${val}</option>`;
+                    });
+                }
+            }
+
+            if (target && target.classList.contains('sub-up-select')) {
+                const wrapper = target.closest('.substat-wrapper');
+                const typeSelect = wrapper.querySelector('.sub-type-select');
+                const upContainer = wrapper.querySelector('.substat-upgrades-container');
+                
+                const selectedType = typeSelect.value;
+                const count = parseInt(target.value) || 0;
+                
+                upContainer.innerHTML = "";
+                if (selectedType !== "선택안함" && count > 0 && userSubstatValues[selectedType]) {
+                    let optionsHtml = '';
+                    userSubstatValues[selectedType].forEach(val => {
+                        optionsHtml += `<option value="${val}">${val}</option>`;
+                    });
+
+                    for (let k = 1; k <= count; k++) {
+                        upContainer.innerHTML += `
+                            <select class="sub-upgrade-val" style="width: 45px; flex: none; padding: 0 2px; font-size: 11px; background-color: #ffd700; border-radius: 2px; border: 1px solid #ccaa00; color: #000; height: 20px; box-sizing: border-box;">
+                                ${optionsHtml}
+                            </select>
+                        `;
+                    }
+                }
+            }
+            
+            // 변경사항 발생 시: 카운터 갱신 -> 중복방지 갱신 -> 스탯 갱신
+            if (box && (target.classList.contains('sub-type-select') || 
+                        target.classList.contains('sub-val-select') || 
+                        target.classList.contains('sub-up-select') || 
+                        target.classList.contains('sub-upgrade-val') || 
+                        target.classList.contains('four-line-chk') || 
+                        target.classList.contains('main-stat-select'))) {
+                
+                const chk = box.querySelector('.four-line-chk');
+                const counter = box.querySelector('.upgrade-counter');
+                if(chk && counter) {
+                    const maxUpgrades = chk.checked ? 5 : 4;
+                    let currentUpgrades = 0;
+                    box.querySelectorAll('.sub-up-select').forEach(sel => {
+                        currentUpgrades += parseInt(sel.value) || 0;
+                    });
+                    const remain = maxUpgrades - currentUpgrades;
+                    counter.innerText = `${remain}회 남음`;
+                    counter.style.color = remain < 0 ? '#ff4444' : '#aaa'; 
+                }
+
+                refreshSelectStates(box);
+                calculateAndShowStats(); 
+            }
+        });
+
+        // 초기화 로직
+        function resetPiece(box) {
+            box.querySelector('.four-line-chk').checked = false;
+            box.querySelector('.upgrade-counter').innerText = '4회 남음';
+            box.querySelector('.upgrade-counter').style.color = '#aaa';
+            
+            const mainSel = box.querySelector('.main-stat-select');
+            if(mainSel) mainSel.selectedIndex = 0;
+
+            box.querySelectorAll('.substat-wrapper').forEach(wrapper => {
+                wrapper.querySelector('.sub-type-select').value = "선택안함";
+                wrapper.querySelector('.sub-val-select').innerHTML = '<option value="0">-</option>';
+                wrapper.querySelector('.sub-up-select').value = "0";
+                wrapper.querySelector('.substat-upgrades-container').innerHTML = '';
+            });
+            refreshSelectStates(box);
+        }
+
+        document.querySelectorAll('.reset-piece-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                resetPiece(e.target.closest('.relic-box'));
+                calculateAndShowStats();
+            });
+        });
+
+        document.getElementById('reset-all-btn').addEventListener('click', () => {
+            document.querySelectorAll('.relic-box').forEach(box => resetPiece(box));
+            calculateAndShowStats();
+        });
+
+
+        // ==========================================
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (상세 보기 체크박스 연동)
+        // ==========================================
+        function calculateAndShowStats() {
+            if(!selectedOptions.character) return; 
+
+            const charData = characterDB.find(c => c.name === selectedOptions.character) || {};
+            const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone) || {};
+            
+            const baseHP = (charData.hp || 1000) + (lcData.hp || 800);
+            const baseATK = (charData.atk || 500) + (lcData.atk || 400);
+            const baseDEF = (charData.def || 400) + (lcData.def || 300);
+            const baseSPD = (charData.spd || 100);
+
+            const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
+            const totalStats = { ...baseStatsDict };
+            let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
+            let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0 };
+
+            const currentMains = [
+                { type: "체력", value: 705 },
+                { type: "공격력", value: 352 },
+                { type: document.getElementById("grid-main-body").value, value: userMainOptions.body[document.getElementById("grid-main-body").value] || 0 },
+                { type: document.getElementById("grid-main-feet").value, value: userMainOptions.feet[document.getElementById("grid-main-feet").value] || 0 },
+                { type: document.getElementById("grid-main-sphere").value, value: userMainOptions.sphere[document.getElementById("grid-main-sphere").value] || 0 },
+                { type: document.getElementById("grid-main-rope").value, value: userMainOptions.rope[document.getElementById("grid-main-rope").value] || 0 }
+            ];
+
+            currentMains.forEach(opt => {
+                if (opt.type && opt.value) {
+                    if (relicPercent[opt.type] !== undefined) relicPercent[opt.type] += opt.value;
+                    else if (relicFlat[opt.type] !== undefined) relicFlat[opt.type] += opt.value;
+                    else totalStats[opt.type] = (totalStats[opt.type] || 0) + opt.value;
+                }
+            });
+
+            document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
+                const type = wrapper.querySelector('.sub-type-select').value;
+                if (type !== "선택안함") {
+                    let totalVal = parseFloat(wrapper.querySelector('.sub-val-select').value) || 0;
+                    wrapper.querySelectorAll('.sub-upgrade-val').forEach(upSel => { totalVal += parseFloat(upSel.value) || 0; });
+                    if (totalVal > 0) {
+                        if (relicPercent[type] !== undefined) relicPercent[type] += totalVal;
+                        else if (relicFlat[type] !== undefined) relicFlat[type] += totalVal;
+                        else totalStats[type] = (totalStats[type] || 0) + totalVal;
+                    }
+                }
+            });
+
+            totalStats["체력"] = baseHP + (baseHP * (relicPercent["체력%"] / 100)) + relicFlat["체력"];
+            totalStats["공격력"] = baseATK + (baseATK * (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
+            totalStats["방어력"] = baseDEF + (baseDEF * (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
+            totalStats["속도"] = baseSPD + relicFlat["속도"]; 
+
+            const sortedKeys = Object.keys(totalStats).sort((a, b) => {
+                const idxA = statPriority.indexOf(a);
+                const idxB = statPriority.indexOf(b);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            const statListEl = document.getElementById("stat-list");
+            const isDetailMode = document.getElementById("toggle-detail-stats").checked;
+            
+            statListEl.innerHTML = `
+                <style>
+                    .stat-row-hover { position: relative; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 0; cursor: help; align-items: center; }
+                    .stat-row-hover .custom-tooltip { visibility: hidden; opacity: 0; position: absolute; left: 105%; top: 50%; transform: translateY(-50%); background-color: rgba(20, 25, 30, 0.95); padding: 8px 14px; border-radius: 8px; font-size: 15px; white-space: nowrap; border: 1px solid #555; box-shadow: 0 4px 15px rgba(0,0,0,0.8); transition: opacity 0.15s ease-in-out; pointer-events: none; z-index: 999; }
+                    .stat-row-hover:hover .custom-tooltip { visibility: visible; opacity: 1; }
+                </style>
+            `; 
+
+            sortedKeys.forEach(key => {
+                const val = totalStats[key];
+                const roundedVal = Math.round(val * 10) / 10;
+                
+                if (roundedVal !== 0 || baseStatsDict[key] !== undefined) {
+                    const isPercent = key.includes("%") || ["치명타 확률", "치명타 피해", "효과 명중", "효과 저항", "격파 특수효과", "치유량 보너스", "에너지 회복효율"].includes(key) || key.includes("피해 보너스");
+                    const displayVal = isPercent ? roundedVal + "%" : Math.floor(roundedVal);
+                    
+                    const baseV = baseStatsDict[key] || 0;
+                    const addV = Math.max(0, val - baseV);
+                    const tipBase = isPercent ? (Math.round(baseV*10)/10) + "%" : Math.floor(baseV);
+                    const tipAdd = isPercent ? (Math.round(addV*10)/10) + "%" : Math.floor(addV);
+                    
+                    if (isDetailMode) {
+                        // [상세 보기 ON] 아래쪽에 기본(노란색) + 추가(흰색)을 항상 노출
+                        const detailInline = (addV > 0) 
+                            ? `<div style="font-size: 14px; line-height: 1.2; margin-top: 2px;"><span style="color:#ffd700;">${tipBase}</span> <span style="color:#ffffff;">+ ${tipAdd}</span></div>` 
+                            : `<div style="font-size: 14px; line-height: 1.2; margin-top: 2px; color:#ffd700;">${tipBase}</div>`;
+                            
+                        statListEl.innerHTML += `
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 0; align-items: center;">
+                                <span style="color: #ccc;">${key}</span>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span style="font-weight: bold; color: #63b3ed; font-size: 19px;">${displayVal}</span>
+                                    ${detailInline}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // [상세 보기 OFF] 기존처럼 마우스 호버 시 툴팁 표시
+                        const tooltipText = (addV > 0) 
+                            ? `<span style="color:#ffd700;">기본 ${tipBase}</span> <span style="color:#ffffff;">+ 추가 ${tipAdd}</span>` 
+                            : `<span style="color:#ffd700;">기본 ${tipBase}</span>`;
+
+                        statListEl.innerHTML += `
+                            <div class="stat-row-hover">
+                                <span style="color: #ccc;">${key}</span>
+                                <span style="font-weight: bold; color: #63b3ed;">${displayVal}</span>
+                                <div class="custom-tooltip">${tooltipText}</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // ★ 화면 진행 (UI) 로직 및 필터링
+        // ==========================================
+        function getAvailable(db, condition, field) {
+            const filtered = db.filter(condition);
+            return [...new Set(filtered.map(item => item[field]))]; 
+        }
+
+        let currentStep = 0; 
+        let selectedOptions = {
+            rarity: null, element: null, path: null, character: null, lcRarity: null, 
+            lightCone: null, superimpose: null, relicSet: null, planarOrnament: null 
+        };
+
+        const breadcrumbArea = document.getElementById("breadcrumb-area");
+        const stepTitle = document.getElementById("step-title");
+        const currentSelect = document.getElementById("current-select");
+        const relicInput = document.getElementById("relic-input");
+        const relicDatalist = document.getElementById("relic-datalist");
+
+        function renderUI() {
+            breadcrumbArea.innerHTML = ""; 
+            const steps = [
+                { key: 'rarity', stepIndex: 0 }, { key: 'element', stepIndex: 1 },
+                { key: 'path', stepIndex: 2 }, { key: 'character', stepIndex: 3 },
+                { key: 'lcRarity', stepIndex: 4 }, { key: 'lightCone', stepIndex: 5 },
+                { key: 'superimpose', stepIndex: 6 }, { key: 'relicSet', stepIndex: 7 },
+                { key: 'planarOrnament', stepIndex: 8 } // 장신구 브레드크럼 추가
+            ];
+
+            steps.forEach(step => {
+                if (selectedOptions[step.key] !== null && currentStep >= step.stepIndex) {
+                    const tag = document.createElement("div");
+                    tag.className = "breadcrumb-item";
+                    tag.innerText = selectedOptions[step.key];
+                    tag.onclick = () => goToStep(step.stepIndex);
+                    breadcrumbArea.appendChild(tag);
+                }
+            });
+
+            if (currentStep <= 6) {
+                currentSelect.style.display = "inline-block";
+                relicInput.style.display = "none";
+                currentSelect.innerHTML = "<option value=''>-- 선택하세요 --</option>";
+                
+                if (currentStep === 0) { stepTitle.innerText = "성급 선택"; addOptions(getAvailable(characterDB, () => true, 'rarity')); }
+                else if (currentStep === 1) { stepTitle.innerText = "속성 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity, 'element')); }
+                else if (currentStep === 2) { stepTitle.innerText = "운명의 길 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.element === selectedOptions.element, 'path')); }
+                else if (currentStep === 3) { stepTitle.innerText = "캐릭터 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.element === selectedOptions.element && c.path === selectedOptions.path, 'name')); }
+                else if (currentStep === 4) { stepTitle.innerText = "광추 성급 선택"; addOptions(getAvailable(lightConeDB, lc => lc.path === selectedOptions.path, 'rarity')); }
+                else if (currentStep === 5) { stepTitle.innerText = "광추 선택"; addOptions(getAvailable(lightConeDB, lc => lc.path === selectedOptions.path && lc.rarity === selectedOptions.lcRarity, 'name')); }
+                else if (currentStep === 6) { stepTitle.innerText = "광추 중첩 선택"; addOptions(["1중첩", "2중첩", "3중첩", "4중첩", "5중첩"]); }
+            } else if (currentStep <= 8) {
+                currentSelect.style.display = "none";
+                relicInput.style.display = "inline-block";
+                relicInput.value = ""; 
+                relicDatalist.innerHTML = ""; 
+
+                if (currentStep === 7) {
+                    stepTitle.innerText = "터널 유물(4세트) 선택";
+                    // type: 'tunnel' 인 것만 표시 (DB 세팅 필요)
+                    addDatalistOptions(getAvailable(relicDB, r => r.type === 'tunnel', 'name'));
+                } else if (currentStep === 8) {
+                    stepTitle.innerText = "차원 장신구(2세트) 선택";
+                    // type: 'planar' 인 것만 표시 (DB 세팅 필요)
+                    addDatalistOptions(getAvailable(relicDB, r => r.type === 'accessory', 'name'));
+                }
+            } else {
+                document.getElementById("dropdown-area").style.display = "none";
+            }
+        }
+
+        function addOptions(arr) {
+            arr.forEach(item => { currentSelect.innerHTML += `<option value="${item}">${item}</option>`; });
+        }
+
+        function addDatalistOptions(arr) {
+            arr.forEach(item => { relicDatalist.innerHTML += `<option value="${item}">`; });
+        }
+
+        function processSelection(val) {
+            if (!val || val.includes("조건에 맞는")) return; 
+
+            if (currentStep === 0) selectedOptions.rarity = val;
+            else if (currentStep === 1) selectedOptions.element = val;
+            else if (currentStep === 2) selectedOptions.path = val;
+            else if (currentStep === 3) {
+                selectedOptions.character = val;
+                const selectedCharData = characterDB.find(c => c.name === val);
+                document.body.style.backgroundImage = `url('${selectedCharData.image}')`;
+                document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                
+                // 캐릭터 선택 완료 즉시 스탯창 조기 표시
+                document.getElementById("stat-panel").style.display = "block";
+                calculateAndShowStats();
+            }
+            else if (currentStep === 4) selectedOptions.lcRarity = val;
+            else if (currentStep === 5) selectedOptions.lightCone = val;
+            else if (currentStep === 6) {
+                selectedOptions.superimpose = val;
+                const selectedLCData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone);
+                const infoArea = document.getElementById("character-info-area");
+                if (!document.getElementById("lc-display-img")) {
+                    infoArea.innerHTML += `
+                        <div id="lc-display-img" style="position: absolute; left: 50%; transform: translateX(-50%); top: 200px; text-align: center;">
+                            <img src="${selectedLCData.image}" alt="${selectedLCData.name}" style="border-radius: 8px; max-width: 140px; box-shadow: 0 8px 20px rgba(0,0,0,0.7); border: 2px solid #ccc;">
+                            <h3 style="color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.9); margin-top: 5px; background-color: rgba(0,0,0,0.6); padding: 2px 8px; font-size: 11px; border-radius: 12px; display: inline-block;">
+                                ${selectedLCData.name} <span style="color: #ffd700;">(${selectedOptions.superimpose})</span>
+                            </h3>
+                        </div>
+                    `;
+                }
+                calculateAndShowStats(); // 광추 스탯 반영
+            }
+            else if (currentStep === 7) selectedOptions.relicSet = val;
+            else if (currentStep === 8) {
+                selectedOptions.planarOrnament = val;
+                
+                // 8단계 장신구 선택 완료 시 브레드크럼 재렌더링 후 드롭다운 숨김
+                currentStep++;
+                renderUI(); 
+                
+                document.getElementById("relic-grid-panel").style.display = "block";
+                // 초기 로드 시 중복 방지 상태 업데이트
+                document.querySelectorAll('.relic-box').forEach(box => refreshSelectStates(box));
+                calculateAndShowStats();
+                return; 
+            }
+
+            if(currentStep <= 7) currentStep++;
+            renderUI();
+        }
+
+        currentSelect.addEventListener("change", function(e) { processSelection(e.target.value); });
+        relicInput.addEventListener("change", function(e) { if (e.target.value) processSelection(e.target.value); });
+
+        function goToStep(step) {
+            currentStep = step;
+            if (step <= 0) selectedOptions.rarity = null;
+            if (step <= 1) selectedOptions.element = null;
+            if (step <= 2) selectedOptions.path = null;
+            if (step <= 3) selectedOptions.character = null;
+            if (step <= 4) selectedOptions.lcRarity = null;
+            if (step <= 5) selectedOptions.lightCone = null; 
+            if (step <= 6) selectedOptions.superimpose = null; 
+            if (step <= 7) selectedOptions.relicSet = null; 
+            selectedOptions.planarOrnament = null; 
+            
+            document.getElementById("dropdown-area").style.display = "block";
+            document.getElementById("relic-grid-panel").style.display = "none"; 
+            
+            if (step <= 3) { // 캐릭터 선택 전으로 돌아가면 스탯창 숨김
+                document.getElementById("stat-panel").style.display = "none";
+            }
+            
+            if (step <= 2) {
+                document.body.style.backgroundImage = "none";
+                document.getElementById("character-info-area").innerHTML = "";
+            }
+            else if (step >= 3 && step <= 5) { 
+                const lcImg = document.getElementById("lc-display-img");
+                if (lcImg) lcImg.remove(); 
+                const selectedCharData = characterDB.find(c => c.name === selectedOptions.character);
+                if (selectedCharData) document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+            }
+            
+            renderUI(); 
+            calculateAndShowStats(); // 상태 변경 시 실시간 반영
+        }
+
+        // ==========================================
+        // ★ 상태 자동 저장 및 불러오기 (Local Storage)
+        // ==========================================
+        function saveToLocalStorage() {
+            const state = {
+                step: currentStep,
+                options: selectedOptions,
+                showDetail: document.getElementById('toggle-detail-stats').checked, // 체크박스 상태 저장
+                relics: []
+            };
+
+            document.querySelectorAll('.relic-box').forEach(box => {
+                const boxData = {
+                    fourLine: box.querySelector('.four-line-chk').checked,
+                    main: box.querySelector('.main-stat-select') ? box.querySelector('.main-stat-select').value : null,
+                    subs: []
+                };
+                box.querySelectorAll('.substat-wrapper').forEach(wrapper => {
+                    const upVals = Array.from(wrapper.querySelectorAll('.sub-upgrade-val')).map(el => el.value);
+                    boxData.subs.push({
+                        type: wrapper.querySelector('.sub-type-select').value,
+                        val: wrapper.querySelector('.sub-val-select').value,
+                        up: wrapper.querySelector('.sub-up-select').value,
+                        upVals: upVals
+                    });
+                });
+                state.relics.push(boxData);
+            });
+            localStorage.setItem('hsrSimulatorSave', JSON.stringify(state));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('hsrSimulatorSave');
+            if (!saved) return;
+            
+            try {
+                const state = JSON.parse(saved);
+                
+                // 1. 선택 옵션 및 진행 단계 복구
+                selectedOptions = state.options;
+                currentStep = state.step;
+                
+                // 체크박스 상태 복구
+                if(state.showDetail !== undefined) {
+                    document.getElementById('toggle-detail-stats').checked = state.showDetail;
+                }
+
+                // 캐릭터/광추 이미지 복구
+                if (selectedOptions.character) {
+                    const charData = characterDB.find(c => c.name === selectedOptions.character);
+                    if (charData) {
+                        document.body.style.backgroundImage = `url('${charData.image}')`;
+                        document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${charData.name}</h1>`;
+                        document.getElementById("stat-panel").style.display = "block";
+                    }
+                }
+                if (selectedOptions.lightCone && selectedOptions.superimpose) {
+                    const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone);
+                    if (lcData) {
+                        document.getElementById("character-info-area").innerHTML += `
+                            <div id="lc-display-img" style="position: absolute; left: 50%; transform: translateX(-50%); top: 200px; text-align: center;">
+                                <img src="${lcData.image}" alt="${lcData.name}" style="border-radius: 8px; max-width: 140px; box-shadow: 0 8px 20px rgba(0,0,0,0.7); border: 2px solid #ccc;">
+                                <h3 style="color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.9); margin-top: 5px; background-color: rgba(0,0,0,0.6); padding: 2px 8px; font-size: 11px; border-radius: 12px; display: inline-block;">
+                                    ${lcData.name} <span style="color: #ffd700;">(${selectedOptions.superimpose})</span>
+                                </h3>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (currentStep >= 9) {
+                    document.getElementById("dropdown-area").style.display = "none";
+                    document.getElementById("relic-grid-panel").style.display = "block";
+                }
+
+                // 2. 유물 옵션 복구
+                const boxes = document.querySelectorAll('.relic-box');
+                state.relics.forEach((boxData, index) => {
+                    if (!boxes[index]) return;
+                    const box = boxes[index];
+                    
+                    box.querySelector('.four-line-chk').checked = boxData.fourLine;
+                    if (boxData.main && box.querySelector('.main-stat-select')) {
+                        box.querySelector('.main-stat-select').value = boxData.main;
+                    }
+                    
+                    const wrappers = box.querySelectorAll('.substat-wrapper');
+                    boxData.subs.forEach((subData, subIdx) => {
+                        if (!wrappers[subIdx]) return;
+                        const wrapper = wrappers[subIdx];
+                        
+                        const typeSel = wrapper.querySelector('.sub-type-select');
+                        typeSel.value = subData.type;
+                        
+                        // 타입 변경 이벤트 강제 발생 (수치 목록 불러오기 위해)
+                        typeSel.dispatchEvent(new Event('change', { bubbles: true }));
+                        
+                        setTimeout(() => {
+                            wrapper.querySelector('.sub-val-select').value = subData.val;
+                            const upSel = wrapper.querySelector('.sub-up-select');
+                            upSel.value = subData.up;
+                            
+                            // 강화 횟수 변경 이벤트 강제 발생 (강화 박스 생성 위해)
+                            upSel.dispatchEvent(new Event('change', { bubbles: true }));
+                            
+                            setTimeout(() => {
+                                const upBoxes = wrapper.querySelectorAll('.sub-upgrade-val');
+                                subData.upVals.forEach((v, vIdx) => {
+                                    if(upBoxes[vIdx]) upBoxes[vIdx].value = v;
+                                });
+                                refreshSelectStates(box);
+                                calculateAndShowStats();
+                            }, 10);
+                        }, 10);
+                    });
+                });
+            } catch (e) {
+                console.error("저장된 데이터를 불러오는 중 오류 발생:", e);
+            }
+        }
+
+        // 화면이나 옵션이 변경될 때마다 자동 저장 트리거
+        document.addEventListener('change', saveToLocalStorage);
+        
+        // 체크박스 클릭 시 스탯창 즉시 다시 그리기
+        document.getElementById('toggle-detail-stats').addEventListener('change', calculateAndShowStats);
+        
+        loadFromLocalStorage();
+        renderUI();
+    </script>
+</body>
+</html>
