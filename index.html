@@ -83,6 +83,8 @@
     </style>
 </head>
 <body>
+    <!-- ★ 이 한 줄을 추가해 줍니다 -->
+    <div id="bg-layer"></div>
     <!-- 레이아웃 컨테이너 (사이트 자체 스크롤 유도를 위해 absolute 사용) -->
     <div style="position: relative; width: 100%; min-height: 120vh;">
 
@@ -739,7 +741,7 @@
             else if (currentStep === 3) {
                 selectedOptions.character = val;
                 const selectedCharData = characterDB.find(c => c.name === val);
-                document.body.style.backgroundImage = `url('${selectedCharData.image}')`;
+                document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
                 document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
                 
                 // 캐릭터 선택 완료 즉시 스탯창 조기 표시
