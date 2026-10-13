@@ -1,6 +1,6 @@
 export const 블랙스완 = 
 {
-        name: "블랙 스완", rarity: "5성", element: "바람", path: "공허", image: "images/블랙 스완.webp",
+        name: "블랙 스완", rarity: "5성", element: "바람", path: "공허", image: "images/블랙스완.webp",
         baseStats: { hp: 1087, atk: 659.74, def: 485.1, spd: 102, maxEnergy: 120 },
         statNodes: { "공격력%": 28, "효과명중%": 10, "바람피해증가%": 14.4 },
         skills: {
