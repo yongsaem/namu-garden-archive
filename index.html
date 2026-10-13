@@ -504,24 +504,39 @@
 
 
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (상세 보기 체크박스 연동)
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (더미 제거 & DB/행적 스탯 연동)
         // ==========================================
         function calculateAndShowStats() {
             if(!selectedOptions.character) return; 
 
+            // DB에서 선택된 캐릭터와 광추 데이터 가져오기 (없으면 빈 객체)
             const charData = characterDB.find(c => c.name === selectedOptions.character) || {};
             const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone) || {};
             
-            const baseHP = (charData.hp || 1000) + (lcData.hp || 800);
-            const baseATK = (charData.atk || 500) + (lcData.atk || 400);
-            const baseDEF = (charData.def || 400) + (lcData.def || 300);
-            const baseSPD = (charData.spd || 100);
+            // 1. 더미 데이터(1000, 800 등) 제거하고 순수 DB 기본 스탯만 가져오기
+            const baseHP = (charData.hp || 0) + (lcData.hp || 0);
+            const baseATK = (charData.atk || 0) + (lcData.atk || 0);
+            const baseDEF = (charData.def || 0) + (lcData.def || 0);
+            const baseSPD = (charData.spd || 0); // 광추에는 기본 속도가 없음
 
+            // 2. 기본 스탯 세팅 (치확 5%, 치피 50% 등 기본값 포함)
             const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
             const totalStats = { ...baseStatsDict };
             let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
             let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0 };
 
+            // 3. ★ 행적(Traces) 스탯 합산 ★
+            if (charData.traces) {
+                charData.traces.forEach(trace => {
+                    const tType = trace.type;
+                    const tVal = trace.value;
+                    if (relicPercent[tType] !== undefined) relicPercent[tType] += tVal;
+                    else if (relicFlat[tType] !== undefined) relicFlat[tType] += tVal;
+                    else totalStats[tType] = (totalStats[tType] || 0) + tVal;
+                });
+            }
+
+            // 4. 유물 주옵션 합산
             const currentMains = [
                 { type: "체력", value: 705 },
                 { type: "공격력", value: 352 },
@@ -539,6 +554,7 @@
                 }
             });
 
+            // 5. 유물 부옵션 합산
             document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
                 const type = wrapper.querySelector('.sub-type-select').value;
                 if (type !== "선택안함") {
@@ -552,11 +568,13 @@
                 }
             });
 
+            // 6. 최종 수식 계산
             totalStats["체력"] = baseHP + (baseHP * (relicPercent["체력%"] / 100)) + relicFlat["체력"];
             totalStats["공격력"] = baseATK + (baseATK * (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
             totalStats["방어력"] = baseDEF + (baseDEF * (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
             totalStats["속도"] = baseSPD + relicFlat["속도"]; 
 
+            // 정렬
             const sortedKeys = Object.keys(totalStats).sort((a, b) => {
                 const idxA = statPriority.indexOf(a);
                 const idxB = statPriority.indexOf(b);
@@ -566,8 +584,10 @@
                 return a.localeCompare(b);
             });
 
+            // 렌더링
             const statListEl = document.getElementById("stat-list");
-            const isDetailMode = document.getElementById("toggle-detail-stats").checked;
+            const toggleEl = document.getElementById("toggle-detail-stats");
+            const isDetailMode = toggleEl ? toggleEl.checked : false;
             
             statListEl.innerHTML = `
                 <style>
@@ -591,7 +611,6 @@
                     const tipAdd = isPercent ? (Math.round(addV*10)/10) + "%" : Math.floor(addV);
                     
                     if (isDetailMode) {
-                        // [상세 보기 ON] 아래쪽에 기본(노란색) + 추가(흰색)을 항상 노출
                         const detailInline = (addV > 0) 
                             ? `<div style="font-size: 14px; line-height: 1.2; margin-top: 2px;"><span style="color:#ffd700;">${tipBase}</span> <span style="color:#ffffff;">+ ${tipAdd}</span></div>` 
                             : `<div style="font-size: 14px; line-height: 1.2; margin-top: 2px; color:#ffd700;">${tipBase}</div>`;
@@ -606,7 +625,6 @@
                             </div>
                         `;
                     } else {
-                        // [상세 보기 OFF] 기존처럼 마우스 호버 시 툴팁 표시
                         const tooltipText = (addV > 0) 
                             ? `<span style="color:#ffd700;">기본 ${tipBase}</span> <span style="color:#ffffff;">+ 추가 ${tipAdd}</span>` 
                             : `<span style="color:#ffd700;">기본 ${tipBase}</span>`;
