@@ -504,39 +504,41 @@
 
 
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (더미 제거 & DB/행적 스탯 연동)
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (선택된 DB 구조 맞춤 적용)
         // ==========================================
         function calculateAndShowStats() {
             if(!selectedOptions.character) return; 
 
-            // DB에서 선택된 캐릭터와 광추 데이터 가져오기 (없으면 빈 객체)
             const charData = characterDB.find(c => c.name === selectedOptions.character) || {};
             const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone) || {};
             
-            // 1. 더미 데이터(1000, 800 등) 제거하고 순수 DB 기본 스탯만 가져오기
-            const baseHP = (charData.hp || 0) + (lcData.hp || 0);
-            const baseATK = (charData.atk || 0) + (lcData.atk || 0);
-            const baseDEF = (charData.def || 0) + (lcData.def || 0);
-            const baseSPD = (charData.spd || 0); // 광추에는 기본 속도가 없음
+            // 1. 캐릭터 DB의 구조 변경 반영 (baseStats 서랍 안에서 꺼내기)
+            const charBase = charData.baseStats || { hp: 0, atk: 0, def: 0, spd: 0 };
+            
+            // 광추도 나중에 baseStats를 쓸 수 있으니 유연하게 처리
+            const lcBase = lcData.baseStats || { hp: lcData.hp || 0, atk: lcData.atk || 0, def: lcData.def || 0 };
+            
+            const baseHP = charBase.hp + lcBase.hp;
+            const baseATK = charBase.atk + lcBase.atk;
+            const baseDEF = charBase.def + lcBase.def;
+            const baseSPD = charBase.spd;
 
-            // 2. 기본 스탯 세팅 (치확 5%, 치피 50% 등 기본값 포함)
             const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
             const totalStats = { ...baseStatsDict };
             let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
             let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0 };
 
-            // 3. ★ 행적(Traces) 스탯 합산 ★
-            if (charData.traces) {
-                charData.traces.forEach(trace => {
-                    const tType = trace.type;
-                    const tVal = trace.value;
+            // 2. ★ 행적(statNodes) 스탯 합산 반영 ★
+            if (charData.statNodes) {
+                Object.entries(charData.statNodes).forEach(([tType, tVal]) => {
+                    // 효과저항% 등 기본 스탯 사전에 없는 키가 올 수 있으므로 예외 처리 추가
                     if (relicPercent[tType] !== undefined) relicPercent[tType] += tVal;
                     else if (relicFlat[tType] !== undefined) relicFlat[tType] += tVal;
                     else totalStats[tType] = (totalStats[tType] || 0) + tVal;
                 });
             }
 
-            // 4. 유물 주옵션 합산
+            // 3. 유물 주옵션 합산
             const currentMains = [
                 { type: "체력", value: 705 },
                 { type: "공격력", value: 352 },
@@ -554,7 +556,7 @@
                 }
             });
 
-            // 5. 유물 부옵션 합산
+            // 4. 유물 부옵션 합산
             document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
                 const type = wrapper.querySelector('.sub-type-select').value;
                 if (type !== "선택안함") {
@@ -568,7 +570,7 @@
                 }
             });
 
-            // 6. 최종 수식 계산
+            // 5. 최종 수식 계산
             totalStats["체력"] = baseHP + (baseHP * (relicPercent["체력%"] / 100)) + relicFlat["체력"];
             totalStats["공격력"] = baseATK + (baseATK * (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
             totalStats["방어력"] = baseDEF + (baseDEF * (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
@@ -601,7 +603,7 @@
                 const val = totalStats[key];
                 const roundedVal = Math.round(val * 10) / 10;
                 
-                if (roundedVal !== 0 || baseStatsDict[key] !== undefined) {
+                if (roundedVal !== 0 || baseStatsDict[key] !== undefined || (charData.statNodes && charData.statNodes[key])) {
                     const isPercent = key.includes("%") || ["치명타 확률", "치명타 피해", "효과 명중", "효과 저항", "격파 특수효과", "치유량 보너스", "에너지 회복효율"].includes(key) || key.includes("피해 보너스");
                     const displayVal = isPercent ? roundedVal + "%" : Math.floor(roundedVal);
                     
@@ -617,7 +619,7 @@
                             
                         statListEl.innerHTML += `
                             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 0; align-items: center;">
-                                <span style="color: #ccc;">${key}</span>
+                                <span style="color: #ccc;">${key.replace("%", "")}</span>
                                 <div style="display: flex; flex-direction: column; align-items: flex-end;">
                                     <span style="font-weight: bold; color: #63b3ed; font-size: 19px;">${displayVal}</span>
                                     ${detailInline}
@@ -631,7 +633,7 @@
 
                         statListEl.innerHTML += `
                             <div class="stat-row-hover">
-                                <span style="color: #ccc;">${key}</span>
+                                <span style="color: #ccc;">${key.replace("%", "")}</span>
                                 <span style="font-weight: bold; color: #63b3ed;">${displayVal}</span>
                                 <div class="custom-tooltip">${tooltipText}</div>
                             </div>
