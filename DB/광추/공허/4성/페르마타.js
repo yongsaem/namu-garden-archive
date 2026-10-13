@@ -1,5 +1,5 @@
 export const 페르마타 = {
-        name: "페르마타", rarity: "4성", path: "공허", image: "images/페르마타.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "페르마타", rarity: "4성", path: "공허",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "쉼표", desc: "장착한 캐릭터의 격파 특수효과가 16%/20%/24%/28%/32% 증가하고, 감전이나 풍화 상태의 적에게 가하는 피해가 16%/20%/24%/28%/32% 증가한다. 해당 효과는 지속 피해에도 적용된다" }
 };

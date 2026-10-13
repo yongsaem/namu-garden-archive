@@ -752,18 +752,6 @@
             else if (currentStep === 5) selectedOptions.lightCone = val;
             else if (currentStep === 6) {
                 selectedOptions.superimpose = val;
-                const selectedLCData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone);
-                const infoArea = document.getElementById("character-info-area");
-                if (!document.getElementById("lc-display-img")) {
-                    infoArea.innerHTML += `
-                        <div id="lc-display-img" style="position: absolute; left: 50%; transform: translateX(-50%); top: 200px; text-align: center;">
-                            <img src="${selectedLCData.image}" alt="${selectedLCData.name}" style="border-radius: 8px; max-width: 140px; box-shadow: 0 8px 20px rgba(0,0,0,0.7); border: 2px solid #ccc;">
-                            <h3 style="color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.9); margin-top: 5px; background-color: rgba(0,0,0,0.6); padding: 2px 8px; font-size: 11px; border-radius: 12px; display: inline-block;">
-                                ${selectedLCData.name} <span style="color: #ffd700;">(${selectedOptions.superimpose})</span>
-                            </h3>
-                        </div>
-                    `;
-                }
                 calculateAndShowStats(); // 광추 스탯 반영
             }
             else if (currentStep === 7) selectedOptions.relicSet = val;

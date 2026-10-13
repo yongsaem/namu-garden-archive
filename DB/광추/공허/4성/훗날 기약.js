@@ -1,5 +1,6 @@
 export const 훗날기약 = {
-        name: "훗날 기약", rarity: "4성", path: "공허", image: "images/훗날 기약.webp",
-        baseStats: { hp: 846.72, atk: 529.2, def: 330.75 },
+        name: "훗날 기약", rarity: "4성", path: "공허",
+        baseStats: { hp: 846, atk: 529, def: 330 },
         skill: { name: "교섭 같은 교전", desc: "장착한 캐릭터가 일반 공격 혹은 전투 스킬 발동 후 임의의 피격된 적 1기에게 자신의 공격력 48%/60%/72%/84%/96% 만큼의 추가 피해를 준다" }
 };
+        

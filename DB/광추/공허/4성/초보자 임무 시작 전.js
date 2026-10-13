@@ -1,5 +1,5 @@
 export const 초보자임무시작전 = {
-        name: "초보자 임무 시작 전", rarity: "4성", path: "공허", image: "images/초보자 임무 시작 전.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "초보자 임무 시작 전", rarity: "4성", path: "공허",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "빠른 눈썰미", desc: "장착한 캐릭터의 효과 명중이 20%/25%/30%/35%/40% 증가한다. 장착한 캐릭터가 방어력이 감소된 적을 공격하면 에너지를 4/5/6/7/8pt 회복한다" }
 };

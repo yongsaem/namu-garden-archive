@@ -1,5 +1,5 @@
 export const 사냥감의시선 = {
-        name: "사냥감의 시선", rarity: "4성", path: "공허", image: "images/사냥감의 시선.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "사냥감의 시선", rarity: "4성", path: "공허",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "자신감", desc: "장착한 캐릭터의 효과 명중이 20%/25%/30%/35%/40% 증가하고, 동시에 가하는 지속 피해가 24%/30%/36%/42%/48% 증가한다" }
 };
