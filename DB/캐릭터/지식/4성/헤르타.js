@@ -1,7 +1,7 @@
 export const 헤르타 = 
 {
         name: "헤르타", rarity: "4성", element: "얼음", path: "지식", image: "images/헤르타.webp",
-        baseStats: { hp: 953, atk: 582.12, def: 396.9, spd: 100, maxEnergy: 110 },
+        baseStats: { hp: 953, atk: 582, def: 397, spd: 100, maxEnergy: 110 },
         statNodes: { "방어력%": 22.5, "치명타확률%": 22.5, "얼음피해증가%": 22.4 },
         skills: {
             technique: { name: "최적화가 필요해", desc: "비술 발동 후 다음 전투 시작 시 헤르타의 공격력이 40% 증가한다. 지속 시간: 3턴" },

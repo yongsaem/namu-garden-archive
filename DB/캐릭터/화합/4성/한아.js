@@ -1,7 +1,7 @@
 export const 한아 = 
 {
         name: "한아", rarity: "4성", element: "물리", path: "화합", image: "images/한아.webp",
-        baseStats: { hp: 917, atk: 564.48, def: 352.8, spd: 110, maxEnergy: 140 },
+        baseStats: { hp: 917, atk: 564, def: 353, spd: 110, maxEnergy: 140 },
         statNodes: { "체력%": 10, "공격력%": 28, "속도": 9 },
         skills: {
             technique: { name: "판명(判冥)", desc: "적을 바로 공격하며, 전투 진입 후 랜덤 단일 적에게 전투 스킬 효과와 동일한 [부담]을 부여한다" },

@@ -1,7 +1,7 @@
 export const 미샤 = 
 {
         name: "미샤", rarity: "4성", element: "얼음", path: "파멸", image: "images/미샤.webp",
-        baseStats: { hp: 1270, atk: 599.76, def: 396.9, spd: 96, maxEnergy: 100 },
+        baseStats: { hp: 1270, atk: 600, def: 397, spd: 96, maxEnergy: 100 },
         statNodes: { "방어력%": 22.5, "치명타확률%": 6.7, "얼음피해증가%": 22.4 },
         skills: {
             technique: { name: "멈추어라, 너 정말 아름답구나!", desc: "비술 사용 후 15초 동안 지속되는 특수 영역을 만든다. 특수 영역 내에 있는 적은 [꿈세계 감옥] 상태에 빠진다. [꿈세계 감옥] 상태에 빠진 적은 모든 행동을 중지한다. [꿈세계 감옥] 상태의 적과 전투 진입 후 미샤의 다음 필살기 공격 단수는 2단 증가한다. 아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

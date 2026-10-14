@@ -1,7 +1,7 @@
 export const 천야블레이드 = 
 {
         name: "천야·블레이드", rarity: "5성", element: "화염", path: "공허", image: "images/천야·블레이드.webp",
-        baseStats: { hp: 1358, atk: 543.31, def: 485.1, spd: 107, maxEnergy: 160 },
+        baseStats: { hp: 1358, atk: 543, def: 485, spd: 107, maxEnergy: 160 },
         statNodes: { "체력%": 10, "치명타확률%": 12, "화염피해증가%": 22.4 },
         skills: {
             technique: { name: "십방 처결", desc: "즉시 일정 범위 내의 모든 적을 공격하고, 전투 진입 후 모든 적을 도발 상태에 빠트린다, 지속 시간: 1턴. 또한, 자신이 받는 피해를 90% 감소시킨다, 지속 시간: 2턴" },

@@ -1,7 +1,7 @@
 export const 아스타 = 
 {
         name: "아스타", rarity: "4성", element: "화염", path: "화합", image: "images/아스타.webp",
-        baseStats: { hp: 1023, atk: 511.56, def: 463.05, spd: 106, maxEnergy: 120 },
+        baseStats: { hp: 1023, atk: 512, def: 463, spd: 106, maxEnergy: 120 },
         statNodes: { "방어력%": 22.5, "치명타확률%": 6.7, "화염피해증가%": 22.4 },
         skills: {
             technique: { name: "미라클 플래쉬", desc: "적을 바로 공격하며, 전투 진입 후 모든 적에게 아스타 공격력 50%만큼의 화염 속성 피해를 가한다" },

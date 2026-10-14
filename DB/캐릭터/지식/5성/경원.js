@@ -1,7 +1,7 @@
 export const 경원 = 
 {
         name: "경원", rarity: "5성", element: "번개", path: "지식", image: "images/경원.webp",
-        baseStats: { hp: 1164, atk: 698.54, def: 485.1, spd: 99, maxEnergy: 130 },
+        baseStats: { hp: 1164, atk: 699, def: 485, spd: 99, maxEnergy: 130 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "치명타확률%": 12 },
         skills: {
             technique: { name: "위령 소환", desc: "비술을 발동하면 다음 전투 시작 시 [신군]의 첫 번째 턴 공격 단수가 3단 증가한다" },

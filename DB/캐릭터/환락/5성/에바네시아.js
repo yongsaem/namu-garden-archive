@@ -1,7 +1,7 @@
 export const 에바네시아 = 
 {
         name: "에바네시아", rarity: "5성", element: "물리", path: "환락", image: "images/에바네시아.webp",
-        baseStats: { hp: 1048, atk: 737.35, def: 460.85, spd: 104, maxEnergy: 480 },
+        baseStats: { hp: 1048, atk: 737, def: 461, spd: 104, maxEnergy: 480 },
         statNodes: { "속도": 5, "치명타확률%": 18.7, "환락도": 18 },
         skills: {
             technique: { name: "낙화 · 기억파편", desc: "즉시 일정 범위 내의 모든 적을 공격한다. 전투 진입 후 모든 적에게 에바네시아 공격력의 100%만큼 물리 속성 피해를 가하고 [훌륭한 솜씨에는 보상을]을 20pt 획득한다" },

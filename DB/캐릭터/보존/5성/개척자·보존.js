@@ -1,7 +1,7 @@
 export const 개척자보존 = 
 {
         name: "개척자·파멸", rarity: "5성", element: "물리", path: "파멸", image: "images/개척자·파멸.webp",
-        baseStats: { hp: 1242, atk: 601.52, def: 606.38, spd: 95, maxEnergy: 120 },
+        baseStats: { hp: 1242, atk: 602, def: 606, spd: 95, maxEnergy: 120 },
         statNodes: { "체력%": 10, "공격력%": 18, "방어력%": 35 },
         skills: {
             technique: { name: "수호자의 부름", desc: "비술 발동 후 다음 전투 시작 시 자신에게 개척자 방어력 30%+384만큼의 피해를 상쇄할 수 있는 실드를 제공한다. 지속 시간: 1턴" },

@@ -1,7 +1,7 @@
 export const 후크 = 
 {
         name: "후크", rarity: "4성", element: "화염", path: "파멸", image: "images/후크.webp",
-        baseStats: { hp: 1341, atk: 617.4, def: 352.8, spd: 94, maxEnergy: 120 },
+        baseStats: { hp: 1341, atk: 617, def: 353, spd: 94, maxEnergy: 120 },
         statNodes: { "체력%": 18, "공격력%": 24, "치명타피해%": 13.3 },
         skills: {
             technique: { name: "윽! 완전 난장판", desc: "적을 바로 공격하며, 전투 진입 후 랜덤 단일 적에게 후크 공격력의 50%만큼 화염 속성 피해를 가하고, 각 단일 적을 100%의 기본 확률로 연소 상태에 빠트린다. 지속 시간: 3턴 연소 상태의 적은 새로운 턴이 시작될 때마다 후크 공격력 50%만큼의 화염 속성 지속 피해를 받는다" },

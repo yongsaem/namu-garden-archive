@@ -1,7 +1,7 @@
 export const 나찰 = 
 {
         name: "나찰", rarity: "5성", element: "허수", path: "풍요", image: "images/나찰.webp",
-        baseStats: { hp: 1281, atk: 756.76, def: 363.83, spd: 101, maxEnergy: 100 },
+        baseStats: { hp: 1281, atk: 757, def: 364, spd: 101, maxEnergy: 100 },
         statNodes: { "체력%": 18, "공격력%": 28, "방어력%": 12.5 },
         skills: {
             technique: { name: "우인의 연민", desc: "비술 발동 후 다음 전투 시작 시 특성을 바로 발동한다" },

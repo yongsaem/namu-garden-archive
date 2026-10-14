@@ -1,7 +1,7 @@
 export const 백로 = 
 {
         name: "백로", rarity: "5성", element: "번개", path: "풍요", image: "images/백로.webp",
-        baseStats: { hp: 1319, atk: 562.72, def: 485.1, spd: 98, maxEnergy: 100 },
+        baseStats: { hp: 1319, atk: 563, def: 485, spd: 98, maxEnergy: 100 },
         statNodes: { "체력%": 28, "방어력%": 22.5, "효과저항%": 10 },
         skills: {
             technique: { name: "은덕을 누려 짧아진 병환", desc: "비술 발동 후 다음 전투 시작 시 모든 아군에게 [생명] 효과를 부여한다. 지속 시간: 2턴" },

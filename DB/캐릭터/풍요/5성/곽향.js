@@ -1,7 +1,7 @@
 export const 곽향 = 
 {
         name: "곽향", rarity: "5성", element: "바람", path: "풍요", image: "images/곽향.webp",
-        baseStats: { hp: 1358, atk: 601.52, def: 509.36, spd: 98, maxEnergy: 140 },
+        baseStats: { hp: 1358, atk: 602, def: 509, spd: 98, maxEnergy: 140 },
         statNodes: { "체력%": 28, "속도": 5, "효과저항%": 18 },
         skills: {
             technique: { name: "악귀·귀물 제압", desc: "곽향이 주위의 적을 위협하여 [백산(魄散)] 상태에 빠트린다. [백산] 상태의 적은 곽향에게서 도망친다, 지속 시간: 10초. [백산] 상태의 적과 전투에 진입하면 100%의 기본 확률로 각 단일 적의 공격력을 25% 감소시킨다. 지속 시간: 2턴" },

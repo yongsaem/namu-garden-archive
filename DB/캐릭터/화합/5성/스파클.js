@@ -1,7 +1,7 @@
 export const 스파클 = 
 {
         name: "스파클", rarity: "5성", element: "양자", path: "화합", image: "images/스파클.webp",
-        baseStats: { hp: 1397, atk: 523.91, def: 485.1, spd: 101, maxEnergy: 110 },
+        baseStats: { hp: 1397, atk: 524, def: 485, spd: 101, maxEnergy: 110 },
         statNodes: { "체력%": 28, "치명타피해%": 24, "효과저항%": 10 },
         skills: {
             technique: { name: "믿을 수 없는 화자", desc: "비술 사용 후 모든 아군이 20초 동안 [미혹] 상태에 진입한다. [미혹] 상태에선 적에게 들키지 않으며, [미혹] 중에 전투 진입 시 아군이 전투 스킬 포인트를 3pt 회복하고, 스파클이 에너지를 20pt 회복한다." },

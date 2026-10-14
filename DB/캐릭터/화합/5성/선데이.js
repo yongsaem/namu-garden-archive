@@ -1,7 +1,7 @@
 export const 선데이 = 
 {
         name: "선데이", rarity: "5성", element: "허수", path: "화합", image: "images/선데이.webp",
-        baseStats: { hp: 1242, atk: 640.33, def: 533.61, spd: 96, maxEnergy: 130 },
+        baseStats: { hp: 1242, atk: 640, def: 534, spd: 96, maxEnergy: 130 },
         statNodes: { "방어력%": 12.5, "치명타피해%": 37.3, "효과저항%": 18 },
         skills: {
             technique: { name: "영광의 신비", desc: "비술 사용 후 다음 전투에서 선데이가 처음으로 아군에게 스킬을 발동하면 목표가 가하는 피해가 50% 증가한다, 지속 시간: 2턴" },

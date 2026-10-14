@@ -1,7 +1,7 @@
 export const 연경 = 
 {
         name: "연경", rarity: "5성", element: "얼음", path: "수렵", image: "images/연경.webp",
-        baseStats: { hp: 893, atk: 679.14, def: 412.34, spd: 109, maxEnergy: 140 },
+        baseStats: { hp: 893, atk: 679, def: 412, spd: 109, maxEnergy: 140 },
         statNodes: { "체력%": 10, "공격력%": 28, "얼음피해증가%": 14.4 },
         skills: {
             technique: { name: "어검의 비결", desc: "비술 발동 후 다음 전투 시작 시 연경은 현재 HP 백분율이 50% 이상인 적에게 가하는 피해가 30% 증가한다. 지속 시간: 2턴" },

@@ -1,7 +1,7 @@
 export const 영사 = 
 {
         name: "영사", rarity: "5성", element: "화염", path: "풍요", image: "images/영사.webp",
-        baseStats: { hp: 1358, atk: 679.14, def: 436.59, spd: 98, maxEnergy: 110 },
+        baseStats: { hp: 1358, atk: 679, def: 437, spd: 98, maxEnergy: 110 },
         statNodes: { "체력%": 18, "공격력%": 10, "격파특수효과%": 37.3 },
         skills: {
             technique: { name: "흩어지는 연무의 색채", desc: "비술 사용 후 다음 전투 시작 시 즉시 [부원]을 소환하고, 모든 적을 [감취] 상태에 빠트린다, 지속 시간: 2턴" },

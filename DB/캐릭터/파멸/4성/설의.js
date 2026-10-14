@@ -1,7 +1,7 @@
 export const 설의 = 
 {
         name: "설의", rarity: "4성", element: "양자", path: "파멸", image: "images/설의.webp",
-        baseStats: { hp: 1058, atk: 599.76, def: 396.9, spd: 103, maxEnergy: 120 },
+        baseStats: { hp: 1058, atk: 600, def: 397, spd: 103, maxEnergy: 120 },
         statNodes: { "체력%": 18, "격파특수효과%": 37.3, "양자피해증가%": 8 },
         skills: {
             technique: { name: "즉참", desc: "적을 바로 공격하며, 전투 진입 후 모든 적에게 설의 공격력의 80%만큼 양자 속성 피해를 준다" },

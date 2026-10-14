@@ -1,7 +1,7 @@
 export const 어공 = 
 {
         name: "어공", rarity: "4성", element: "허수", path: "화합", image: "images/어공.webp",
-        baseStats: { hp: 917, atk: 599.76, def: 374.85, spd: 107, maxEnergy: 130 },
+        baseStats: { hp: 917, atk: 600, def: 375, spd: 107, maxEnergy: 130 },
         statNodes: { "체력%": 18, "공격력%": 10, "허수피해증가%": 22.4 },
         skills: {
             technique: { name: "바람을 가르는 연", desc: "비술 사용 후 20초 동안 질주 상태에 진입한다. 질주 상태에선 자신의 이동 속도가 35% 증가하며, 선공을 가해 적과의 전투 진입 시 어공은 [활시위 호령]을 2스택 획득한다" },

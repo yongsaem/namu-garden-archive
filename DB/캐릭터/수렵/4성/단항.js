@@ -1,7 +1,7 @@
 export const 단항 = 
 {
         name: "단항", rarity: "4성", element: "바람", path: "수렵", image: "images/단항.webp",
-        baseStats: { hp: 882, atk: 546.84, def: 396.9, spd: 110, maxEnergy: 100 },
+        baseStats: { hp: 882, atk: 547, def: 397, spd: 110, maxEnergy: 100 },
         statNodes: { "공격력%": 18, "방어력%": 12.5, "바람피해증가%": 22.4 },
         skills: {
             technique: { name: "섬멸의 칼날", desc: "비술 발동 후 다음 전투 시작 시 단항의 공격력이 40% 증가한다. 지속 시간: 3턴" },

@@ -1,7 +1,7 @@
 export const 애쉬베일 = 
 {
         name: "애쉬베일", rarity: "5성", element: "번개", path: "수렵", image: "images/애쉬베일.webp",
-        baseStats: { hp: 854, atk: 776.16, def: 388.08, spd: 106, maxEnergy: 150 },
+        baseStats: { hp: 854, atk: 776, def: 388, spd: 106, maxEnergy: 150 },
         statNodes: { "공격력%": 10, "치명타피해%": 37.3, "번개피해증가%": 14.4 },
         skills: {
             technique: { name: "먹어라, 가증스러운 손이여", desc: "비술 사용 후 일정 구역 내의 적을 10초 동안 현기증 상태에 빠트린다. 현기증 상태인 적은 아군을 선공할 수 없다.현기증 상태에 빠진 적을 선공해 전투 진입 시, 모든 적에게 애쉬베일 공격력의 100%만큼 번개 속성 피해를 가하고, 애쉬베일이 충전을 1pt 획득한다" },

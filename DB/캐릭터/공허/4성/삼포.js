@@ -1,7 +1,7 @@
 export const 삼포 = 
 {
         name: "삼포", rarity: "4성", element: "바람", path: "공허", image: "images/삼포.webp",
-        baseStats: { hp: 1023, atk: 617.4, def: 396.9, spd: 102, maxEnergy: 120 },
+        baseStats: { hp: 1023, atk: 617, def: 397, spd: 102, maxEnergy: 120 },
         statNodes: { "공격력%": 28, "효과명중%": 18, "효과저항%": 10 },
         skills: {
             technique: { name: "네가 가장 빛나", desc: "비술 사용 후 일정 영역 내의 적을 10초 동안 실명 상태에 빠트린다. 실명 상태에 진입한 적은 아군을 발견할 수 없다.실명 상태의 적을 선공하여 전투 진입 시 100%의 고정 확률로 각 단일 적의 행동 게이지가 25% 감소한다" },

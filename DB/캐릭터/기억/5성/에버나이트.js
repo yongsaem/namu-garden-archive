@@ -1,7 +1,7 @@
 export const 에버나이트 = 
 {
         name: "에버나이트", rarity: "5성", element: "얼음", path: "기억", image: "images/에버나이트.webp",
-        baseStats: { hp: 1319, atk: 543.31, def: 582.12, spd: 99, maxEnergy: 240 },
+        baseStats: { hp: 1319, atk: 543, def: 582, spd: 99, maxEnergy: 240 },
         statNodes: { "체력%": 18, "치명타확률%": 18.7, "치명타피해%": 13.3 },
         skills: {
             technique: { name: "차가운 비가 내리기를", desc: "비술을 사용하면 다음 전투 시작 시 전투 스킬과 동일한 모든 아군 기억 정령 치명타 피해 증가 효과를 획득하고, [기억 물질]을 1pt 획득한다" },

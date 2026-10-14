@@ -1,7 +1,7 @@
 export const 정운 = 
 {
         name: "정운", rarity: "4성", element: "번개", path: "화합", image: "images/정운.webp",
-        baseStats: { hp: 847, atk: 529.2, def: 396.9, spd: 112, maxEnergy: 130 },
+        baseStats: { hp: 847, atk: 529, def: 397, spd: 112, maxEnergy: 130 },
         statNodes: { "공격력%": 28, "방어력%": 22.5, "번개피해증가%": 8 },
         skills: {
             technique: { name: "산들바람", desc: "비술을 발동하는 즉시 자신의 에너지를 50pt 회복한다" },

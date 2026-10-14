@@ -1,7 +1,7 @@
 export const 트리비 = 
 {
         name: "트리비", rarity: "5성", element: "양자", path: "화합", image: "images/트리비.webp",
-        baseStats: { hp: 1048, atk: 523.91, def: 727.65, spd: 96, maxEnergy: 120 },
+        baseStats: { hp: 1048, atk: 524, def: 728, spd: 96, maxEnergy: 120 },
         statNodes: { "체력%": 10, "치명타확률%": 12, "치명타피해%": 37.3 },
         skills: {
             technique: { name: "모두 다 같이 손뼉을", desc: "비술 사용 후 전투 진입 시 [신의 계시]를 획득한다, 지속 시간: 3턴" },

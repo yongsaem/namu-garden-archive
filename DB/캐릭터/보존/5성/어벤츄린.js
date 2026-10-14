@@ -1,7 +1,7 @@
 export const 어벤츄린 = 
 {
         name: "어벤츄린", rarity: "5성", element: "허수", path: "보존", image: "images/어벤츄린.webp",
-        baseStats: { hp: 1203, atk: 446.29, def: 654.88, spd: 106, maxEnergy: 110 },
+        baseStats: { hp: 1203, atk: 446, def: 655, spd: 106, maxEnergy: 110 },
         statNodes: { "방어력%": 35, "효과저항%": 10, "허수피해증가%": 14.4 },
         skills: {
             technique: { name: "빨강과 검정 사이", desc: "비술 발동 후 다음 효과 중 1개를 획득한다.일정 확률로 방어력 24% 증가 높은 확률로 방어력 36% 증가 낮은 확률로 방어력 60% 증가 중복 사용 시 수치가 가장 높은 효과가 유지된다.다음 전투 시작 시 모든 아군의 방어력이 대응하는 수치만큼 증가한다. 지속 시간: 3턴" },

@@ -1,7 +1,7 @@
 export const 운리 = 
 {
         name: "운리", rarity: "5성", element: "물리", path: "파멸", image: "images/운리.webp",
-        baseStats: { hp: 1358, atk: 679.14, def: 460.85, spd: 94, maxEnergy: 240 },
+        baseStats: { hp: 1358, atk: 679, def: 461, spd: 94, maxEnergy: 240 },
         statNodes: { "체력%": 18, "공격력%": 28, "치명타확률%": 6.7 },
         skills: {
             technique: { name: "후발선지", desc: "자신이 20초 동안 [튕겨내기] 효과를 획득한다. 지속 시간 동안 적을 공격하거나 피격되어 전투에 진입하면 즉시 랜덤 단일 적에게 [간파•멸]을 발동하고, 이번 공격이 가하는 피해가 80% 증가한다" },

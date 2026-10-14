@@ -1,7 +1,7 @@
 export const 카프카 = 
 {
         name: "카프카", rarity: "5성", element: "번개", path: "공허", image: "images/카프카.webp",
-        baseStats: { hp: 1087, atk: 679.14, def: 485.1, spd: 100, maxEnergy: 120 },
+        baseStats: { hp: 1087, atk: 679, def: 485, spd: 100, maxEnergy: 120 },
         statNodes: { "체력%": 10, "공격력%": 28, "효과명중%": 18 },
         skills: {
             technique: { name: "자비와 무관한 용서", desc: "일정 범위 내 모든 적을 바로 공격하며, 전투 진입 후 모든 적에게 카프카 공격력의 50%만큼 번개 속성 피해를 가하고, 100%의 기본 확률로 각 단일 적을 필살기와 동일한 감전 상태에 빠트린다. 지속 시간: 2턴" },

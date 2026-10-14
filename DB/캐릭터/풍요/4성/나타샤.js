@@ -1,7 +1,7 @@
 export const 나타샤 = 
 {
         name: "나타샤", rarity: "4성", element: "물리", path: "풍요", image: "images/나타샤.webp",
-        baseStats: { hp: 1164, atk: 476.28, def: 507.15, spd: 98, maxEnergy: 90 },
+        baseStats: { hp: 1164, atk: 476, def: 507, spd: 98, maxEnergy: 90 },
         statNodes: { "체력%": 28, "방어력%": 12.5, "효과저항%": 18 },
         skills: {
             technique: { name: "최면 연구", desc: "적을 바로 공격하며, 전투 진입 후 임의의 단일 적에게 나타샤 공격력 80%만큼의 물리 속성 피해를 준다. 동시에 100%의 기본 확률로 각 단일 적을 허약 상태에 빠트린다.허약 상태의 적은 아군에게 가하는 피해가 30% 감소한다. 지속 시간: 1턴" },

@@ -1,7 +1,7 @@
 export const 펄 = 
 {
         name: "펄", rarity: "5성", element: "얼음", path: "환락", image: "images/펄.webp",
-        baseStats: { hp: 1203, atk: 465.7, def: 727.65, spd: 99, maxEnergy: 180 },
+        baseStats: { hp: 1203, atk: 466, def: 728, spd: 99, maxEnergy: 180 },
         statNodes: { "방어력%": 22.5, "속도": 9, "효과저항%": 10, "환락도": 10 },
         skills: {
             technique: { name: "영롱한 진주, 재현된 진본", desc: "비술 사용 후 [미학의 저본]을 획득하고, 행동 캐릭터 전환 시 [미학의 저본]이 현재 행동 캐릭터에게 이전된다. 다음 전투 시작 시, 펄은 [훌륭한 솜씨에는 보상을]을 20pt 획득하고, [미학의 저본]을 보유한 캐릭터를 [심층 학습]하며, 해당 [심층 학습]은 충전을 2pt 보유한다. 펄은 자신을 제외한 캐릭터만 [심층 학습]할 수 있다" },

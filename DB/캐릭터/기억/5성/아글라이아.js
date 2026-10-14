@@ -1,7 +1,7 @@
 export const 아글라이아 = 
 {
         name: "아글라이아", rarity: "5성", element: "번개", path: "기억", image: "images/아글라이아.webp",
-        baseStats: { hp: 1242, atk: 698.54, def: 485.1, spd: 102, maxEnergy: 350 },
+        baseStats: { hp: 1242, atk: 699, def: 485, spd: 102, maxEnergy: 350 },
         statNodes: { "방어력%": 12.5, "치명타확률%": 12, "번개피해증가%": 22.4 },
         skills: {
             technique: { name: "별을 가르는 신속", desc: "기억 정령 의상공을 소환하고 함께 전방을 향해 공격한다. 전투 진입 후 에너지를 30pt 회복하고 모든 적에게 아글라이아 공격력의 100%만큼 번개 속성 피해를 가하며, 이후 랜덤 적을 [틈새를 메우는 실] 상태에 빠트린다" },

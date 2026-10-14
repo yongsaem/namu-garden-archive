@@ -1,7 +1,7 @@
 export const 은랑 = 
 {
         name: "은랑", rarity: "5성", element: "양자", path: "공허", image: "images/은랑.webp",
-        baseStats: { hp: 1048, atk: 640.33, def: 460.85, spd: 107, maxEnergy: 110 },
+        baseStats: { hp: 1048, atk: 640, def: 461, spd: 107, maxEnergy: 110 },
         statNodes: { "공격력%": 28, "효과명중%": 18, "양자피해증가%": 8 },
         skills: {
             technique: { name: "|프로세스 강제 종료|", desc: "적을 바로 공격하며, 전투 진입 후 모든 적에게 은랑 공격력의 80%만큼 양자 속성 피해를 주고, 모든 적의 강인성을 소모하는데 이때 약점 속성을 무시한다. 약점 격파 시 발동되는 약점 격파 효과는 양자 속성이다" },

@@ -1,7 +1,7 @@
 export const 어벤츄린웨이브 = 
 {
         name: "어벤츄린·웨이브", rarity: "5성", element: "양자", path: "환락", image: "images/어벤츄린·웨이브.webp",
-        baseStats: { hp: 1164, atk: 485.1, def: 606.38, spd: 107, maxEnergy: 130 },
+        baseStats: { hp: 1164, atk: 485, def: 606, spd: 107, maxEnergy: 130 },
         statNodes: { "속도": 9, "치명타확률%": 18.7, "환락도": 10 },
         skills: {
             technique: { name: "고요한 수면의 파란", desc: "빠르게 전방을 향해 일정 거리 이동하며, 접촉한 적을 공격한다. 빠른 이동 중에는 적의 모든 공격을 막을 수 있다. 적을 선공해 전투에 진입하면 모든 적에게 어벤츄린•웨이브 공격력의 100%만큼 양자 속성 피해를 가하고, [열의] 2pt 및 [훌륭한 솜씨에는 보상을] 20pt를 획득한다. 적을 명중하지 않으면 비술 포인트를 소모하지 않는다" },

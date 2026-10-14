@@ -1,7 +1,7 @@
 export const Dr레이시오 = 
 {
         name: "Dr.레이시오", rarity: "5성", element: "허수", path: "수렵", image: "images/Dr.레이시오.webp",
-        baseStats: { hp: 1048, atk: 776.16, def: 460.85, spd: 103, maxEnergy: 140 },
+        baseStats: { hp: 1048, atk: 776, def: 461, spd: 103, maxEnergy: 140 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "치명타확률%": 12 },
         skills: {
             technique: { name: "우상 형상화", desc: "비술 사용 후 특수 영역을 만들어 주변의 적을 도발한다. 지속 시간: 10초. 특수 영역 내의 적은 전투 진입 후 100%의 기본 확률로 각 단일 적의 속도가 15% 감소한다. 지속 시간: 2턴. 아군이 생성한 영역 효과는 최대 1개만 존재할 수 있다" },

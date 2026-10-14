@@ -1,7 +1,7 @@
 export const 맥택 = 
 {
         name: "맥택", rarity: "4성", element: "번개", path: "수렵", image: "images/맥택.webp",
-        baseStats: { hp: 811, atk: 599.76, def: 352.8, spd: 111, maxEnergy: 120 },
+        baseStats: { hp: 811, atk: 600, def: 353, spd: 111, maxEnergy: 120 },
         statNodes: { "체력%": 10, "공격력%": 18, "치명타피해%": 37.3 },
         skills: {
             technique: { name: "은닉한 날개", desc: "비술 사용 후 20초 동안 지속되는 은신 상태에 진입한다. 은신 상태에선 적에게 들키지 않으며, 맥택이 은신 상태에서 적을 공격해 전투에 진입할 시 피해가 30% 증가한다, 지속 시간: 2턴" },

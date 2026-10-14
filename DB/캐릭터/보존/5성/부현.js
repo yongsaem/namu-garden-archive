@@ -1,7 +1,7 @@
 export const 부현 = 
 {
         name: "부현", rarity: "5성", element: "양자", path: "보존", image: "images/부현.webp",
-        baseStats: { hp: 1475, atk: 465.7, def: 606.38, spd: 100, maxEnergy: 135 },
+        baseStats: { hp: 1475, atk: 466, def: 606, spd: 100, maxEnergy: 135 },
         statNodes: { "체력%": 18, "치명타확률%": 18.7, "효과저항%": 10 },
         skills: {
             technique: { name: "길흉화복, 성좌의 영역", desc: "비술 사용 후 모든 아군이 20초간 지속되는 배리어를 획득한다. 해당 배리어는 적의 모든 공격을 막으며, 공격을 받아도 전투에 진입하지 않는다. 배리어가 지속되는 동안 전투에 진입하면 부현은 자동으로 [궁관진]을 활성화한다. 지속 시간: 2턴" },

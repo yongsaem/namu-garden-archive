@@ -1,7 +1,7 @@
 export const 계네빈 = 
 {
         name: "계네빈", rarity: "4성", element: "화염", path: "공허", image: "images/계네빈.webp",
-        baseStats: { hp: 882, atk: 582.12, def: 441, spd: 106, maxEnergy: 120 },
+        baseStats: { hp: 882, atk: 582, def: 441, spd: 106, maxEnergy: 120 },
         statNodes: { "격파특수효과%": 24, "효과명중%": 10, "화염피해증가%": 22.4 },
         skills: {
             technique: { name: "길거리 공연", desc: "적을 바로 공격하며, 전투 진입 후 피해를 4회 준다. 피해를 가할 때마다 임의의 단일 적에게 계네빈 공격력 50%만큼의 화염 속성 피해를 주고 100%의 기본 확률로 목표를 [불쇼] 상태에 빠트린다" },

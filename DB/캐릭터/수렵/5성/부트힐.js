@@ -1,7 +1,7 @@
 export const 부트힐 = 
 {
         name: "부트힐", rarity: "5성", element: "물리", path: "수렵", image: "images/부트힐.webp",
-        baseStats: { hp: 1203, atk: 620.93, def: 436.59, spd: 107, maxEnergy: 115 },
+        baseStats: { hp: 1203, atk: 621, def: 437, spd: 107, maxEnergy: 115 },
         statNodes: { "체력%": 10, "공격력%": 18, "격파특수효과%": 37.3 },
         skills: {
             technique: { name: "3-9x의 미소", desc: "비술 사용 후 다음번 전투에서 처음 전투 스킬을 발동할 시, 목표에게 필살기와 동일한 물리 약점을 부여한다. 지속 시간: 2턴" },

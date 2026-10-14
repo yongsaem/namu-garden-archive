@@ -1,7 +1,7 @@
 export const 로빈 = 
 {
         name: "로빈", rarity: "5성", element: "물리", path: "화합", image: "images/로빈.webp",
-        baseStats: { hp: 1281, atk: 640.33, def: 485.1, spd: 102, maxEnergy: 160 },
+        baseStats: { hp: 1281, atk: 640, def: 485, spd: 102, maxEnergy: 160 },
         statNodes: { "체력%": 18, "공격력%": 28, "속도": 5 },
         skills: {
             technique: { name: "심취의 서곡", desc: "비술 발동 후 자기 주변에 15초 동안 지속되는 특수 영역을 펼친다. 영역 내의 적은 로빈을 공격하지 않고, 영역이 전개되어 있는 동안 로빈을 따라다닌다. 영역이 전개되어 있는 동안 전투에 진입하면, 웨이브가 시작될 때마다 로빈은 에너지를 5pt 회복한다. 아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

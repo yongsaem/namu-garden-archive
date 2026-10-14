@@ -1,7 +1,7 @@
 export const 아처 = 
 {
         name: "아처", rarity: "5성", element: "양자", path: "수렵", image: "images/아처.webp",
-        baseStats: { hp: 1164, atk: 620.93, def: 485.1, spd: 105, maxEnergy: 220 },
+        baseStats: { hp: 1164, atk: 621, def: 485, spd: 105, maxEnergy: 220 },
         statNodes: { "공격력%": 18, "치명타확률%": 6.7, "양자피해증가%": 22.4 },
         skills: {
             technique: { name: "천리안", desc: "즉시 적을 공격하며, 전투 진입 후 모든 적에게 아처 공격력의 200%만큼 양자 속성 피해를 가하고, 충전을 1pt 획득한다" },

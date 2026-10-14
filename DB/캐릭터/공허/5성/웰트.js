@@ -1,7 +1,7 @@
 export const 웰트 = 
 {
         name: "웰트", rarity: "5성", element: "허수", path: "공허", image: "images/웰트.webp",
-        baseStats: { hp: 1125, atk: 620.93, def: 509.36, spd: 102, maxEnergy: 120 },
+        baseStats: { hp: 1125, atk: 621, def: 509, spd: 102, maxEnergy: 120 },
         statNodes: { "효과명중%": 28, "효과저항%": 10, "허수피해증가%": 14.4 },
         skills: {
             technique: { name: "범위 제한", desc: "비술 사용 후 15초 동안 지속되는 특수 영역을 하나 만든다. 특수 영역 안에 있는 적은 이동 속도가 50% 감소한다. 특수 영역 안에 있는 적은 전투 진입 후 100%의 기본 확률로 속박 상태에 빠진다. 지속 시간: 1턴 속박 상태의 적은 행동 게이지가 20% 감소하고, 속도가 10% 감소한다. 아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

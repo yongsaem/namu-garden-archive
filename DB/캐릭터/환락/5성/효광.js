@@ -1,7 +1,7 @@
 export const 효광 = 
 {
         name: "효광", rarity: "5성", element: "물리", path: "환락", image: "images/효광.webp",
-        baseStats: { hp: 1242, atk: 465.7, def: 654.88, spd: 101, maxEnergy: 180 },
+        baseStats: { hp: 1242, atk: 466, def: 655, spd: 101, maxEnergy: 180 },
         statNodes: { "속도": 9, "치명타확률%": 18.7, "환락도": 10 },
         skills: {
             technique: { name: "찰나의 빛, 사라진 금기", desc: "비술 사용 후, 다음 전투 시작 시 자동으로 전투 스킬을 1회 발동하며, 이번 발동은 전투 스킬 포인트를 소모하지 않는다. 효광이 파티에 있을 시, 파괴 가능한 물체를 파괴하면 즉시 「행운의 봉투」를 획득하며, 지구주마다 최대 8개 획득할 수 있다" },

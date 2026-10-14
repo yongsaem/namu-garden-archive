@@ -1,7 +1,7 @@
 export const 초구 = 
 {
         name: "초구", rarity: "5성", element: "화염", path: "공허", image: "images/초구.webp",
-        baseStats: { hp: 1358, atk: 601.52, def: 509.36, spd: 98, maxEnergy: 100 },
+        baseStats: { hp: 1358, atk: 602, def: 509, spd: 98, maxEnergy: 100 },
         statNodes: { "속도": 5, "효과명중%": 28, "화염피해증가%": 14.4 },
         skills: {
             technique: { name: "혼란을 잠재우는 맹화", desc: "비술 사용 후 15초 동안 지속되는 특수 영역을 하나 만든다. 특수 영역 안에 있는 적과 전투 진입 후 모든 적에게 초구 공격력의 100%만큼 화염 속성 피해를 가하고, 100%의 기본 확률로 [훈작]을 1스택 부여한다. 아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

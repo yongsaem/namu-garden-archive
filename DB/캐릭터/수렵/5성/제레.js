@@ -1,7 +1,7 @@
 export const 제레 = 
 {
         name: "제레", rarity: "5성", element: "양자", path: "수렵", image: "images/제레.webp",
-        baseStats: { hp: 931, atk: 640.33, def: 363.83, spd: 115, maxEnergy: 120 },
+        baseStats: { hp: 931, atk: 640, def: 364, spd: 115, maxEnergy: 120 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "치명타피해%": 24 },
         skills: {
             technique: { name: "환신", desc: "비술 사용 후 20초 동안 지속되는 은신 상태에 진입한다. 은신 상태에서는 적에게 발견되지 않으며, 적을 선공하여 전투 진입 시 제레는 즉시 증폭 상태에 진입하고, 랜덤 적에게 제레 전투 스킬 피해 배율만큼 양자 속성 피해를 1회 가한다. 해당 피해는 반드시 치명타이다" },

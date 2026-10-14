@@ -1,7 +1,7 @@
 export const 루카 = 
 {
         name: "루카", rarity: "4성", element: "물리", path: "공허", image: "images/루카.webp",
-        baseStats: { hp: 917, atk: 582.12, def: 485.1, spd: 103, maxEnergy: 130 },
+        baseStats: { hp: 917, atk: 582, def: 485, spd: 103, maxEnergy: 130 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "효과명중%": 18 },
         skills: {
             technique: { name: "앞서는 자", desc: "적을 바로 공격하며, 전투 진입 후 임의의 단일 적에게 루카 공격력 50%만큼의 물리 속성 피해를 가하고, 100%의 기본 확률로 목표를 전투 스킬과 동일한 열상 상태에 빠트린다. 그 후 루카는 [투지]를 1스택 추가로 획득한다" },

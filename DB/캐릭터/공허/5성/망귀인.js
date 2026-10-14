@@ -1,7 +1,7 @@
 export const 망귀인 = 
 {
         name: "망귀인", rarity: "5성", element: "화염", path: "공허", image: "images/망귀인.webp",
-        baseStats: { hp: 1125, atk: 582.12, def: 557.87, spd: 102, maxEnergy: 130 },
+        baseStats: { hp: 1125, atk: 582, def: 558, spd: 102, maxEnergy: 130 },
         statNodes: { "체력%": 10, "속도": 14, "격파특수효과%": 24 },
         skills: {
             technique: { name: "대지를 밝히는 통찰", desc: "비술 사용 후 일정 구역 내의 적을 10초 동안 현기증 상태에 빠트린다. 현기증 상태의 적은 아군을 선공할 수 없다.현기증 상태에 빠진 적을 선공하면 전투 진입 후 망귀인의 행동 게이지가 40% 증가하고, 100%의 기본 확률로 각 단일 적을 망귀인의 전투 스킬과 동일한 방어력 감소 효과에 빠트린다, 지속 시간: 2턴" },

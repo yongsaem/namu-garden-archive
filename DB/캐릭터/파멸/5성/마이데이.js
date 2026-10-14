@@ -1,7 +1,7 @@
 export const 마이데이 = 
 {
         name: "마이데이", rarity: "5성", element: "허수", path: "파멸", image: "images/마이데이.webp",
-        baseStats: { hp: 1552, atk: 426.89, def: 194.04, spd: 95, maxEnergy: 160 },
+        baseStats: { hp: 1552, atk: 427, def: 194, spd: 95, maxEnergy: 160 },
         statNodes: { "체력%": 18, "속도": 5, "치명타피해%": 37.3 },
         skills: {
             technique: { name: "부러진 창의 감옥", desc: "비술을 사용하면 일정 구역 내의 적을 끌어당기고 10초 동안 현기증 상태에 빠트린다. 현기증 상태인 적은 아군을 선공할 수 없다. 현기증 상태에 빠진 적을 선공해 전투 진입 시, 모든 적에게 마이데이 HP 최대치의 80%만큼 허수 속성 피해를 가하고, 목표를 도발 상태에 빠트린다, 지속 시간: 1턴. 자신은 특성 충전을 50pt 누적한다" },

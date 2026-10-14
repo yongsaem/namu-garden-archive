@@ -1,7 +1,7 @@
 export const 개척자파멸 = 
 {
         name: "개척자·파멸", rarity: "5성", element: "물리", path: "파멸", image: "images/개척자·파멸.webp",
-        baseStats: { hp: 1203, atk: 620.93, def: 460.85, spd: 100, maxEnergy: 120 },
+        baseStats: { hp: 1203, atk: 621, def: 461, spd: 100, maxEnergy: 120 },
         statNodes: { "체력%": 18, "공격력%": 28, "방어력%": 12.5 },
         skills: {
             technique: { name: "불멸의 삼진", desc: "비술 발동 후 즉시 모든 아군은 자신의 HP 최대치 15%만큼의 HP를 회복한다" },

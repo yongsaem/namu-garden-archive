@@ -1,7 +1,7 @@
 export const 갤러거 = 
 {
         name: "갤러거", rarity: "4성", element: "화염", path: "풍요", image: "images/갤러거.webp",
-        baseStats: { hp: 1305, atk: 529.2, def: 441, spd: 98, maxEnergy: 110 },
+        baseStats: { hp: 1305, atk: 529, def: 441, spd: 98, maxEnergy: 110 },
         statNodes: { "체력%": 10, "격파특수효과%": 24, "효과저항%": 28 },
         skills: {
             technique: { name: "빈티지 개봉", desc: "적을 바로 공격하며, 전투 진입 후 모든 적을 [만취] 상태에 빠트린다. 지속 시간: 2턴. 또한, 모든 적에게 갤러거 공격력의 50%만큼 화염 속성 피해를 가한다" },

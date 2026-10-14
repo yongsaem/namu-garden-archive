@@ -1,7 +1,7 @@
 export const Mar7th =
 {
         name: "Mar.7th", rarity: "4성", element: "얼음", path: "보존", image: "images/Mar.7th.webp",
-        baseStats: { hp: 1058, atk: 511.56, def: 573.3, spd: 101, maxEnergy: 120 },
+        baseStats: { hp: 1058, atk: 512, def: 573, spd: 101, maxEnergy: 120 },
         statNodes: { "방어력%": 22.5, "효과저항%": 10, "얼음피해증가%": 22.4 },
         skills: {
             technique: { name: "빙결의 순간", desc: "적을 바로 공격하며, 전투 진입 후 100%의 기본 확률로 랜덤 단일 적을 빙결 상태에 빠트린다. 지속 시간: 1턴 빙결 상태의 적은 행동할 수 없을 뿐만 아니라 새로운 턴이 시작될 때마다 Mar. 7th 공격력 50%만큼의 얼음 속성 추가 피해를 받는다" },

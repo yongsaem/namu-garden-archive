@@ -1,7 +1,7 @@
 export const 아를란 = 
 {
         name: "아를란", rarity: "4성", element: "번개", path: "파멸", image: "images/아를란.webp",
-        baseStats: { hp: 1200, atk: 599.76, def: 330.75, spd: 102, maxEnergy: 110 },
+        baseStats: { hp: 1200, atk: 600, def: 331, spd: 102, maxEnergy: 110 },
         statNodes: { "체력%": 18, "공격력%": 28, "효과저항%": 18 },
         skills: {
             technique: { name: "신속한 수확", desc: "적을 바로 공격하며, 전투 진입 후 모든 적에게 아를란 공격력 80%만큼의 번개 속성 피해를 가한다" },

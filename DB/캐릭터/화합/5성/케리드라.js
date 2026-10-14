@@ -1,7 +1,7 @@
 export const 케리드라 = 
 {
         name: "케리드라", rarity: "5성", element: "바람", path: "화합", image: "images/케리드라.webp",
-        baseStats: { hp: 1358, atk: 620.93, def: 485.1, spd: 99, maxEnergy: 130 },
+        baseStats: { hp: 1358, atk: 621, def: 485, spd: 99, maxEnergy: 130 },
         statNodes: { "체력%": 10, "공격력%": 18, "바람피해증가%": 22.4 },
         skills: {
             technique: { name: "선수 우위", desc: "비술 사용 후 [군공]을 획득하고, 행동 캐릭터 변경 시 [군공]이 현재 행동 캐릭터에게 이전된다. 다음 전투 시작 시 [군공]을 보유한 캐릭터에게 자동으로 전투 스킬을 1회 발동하고, 해당 전투 스킬은 전투 스킬 포인트를 소모하지 않는다" },

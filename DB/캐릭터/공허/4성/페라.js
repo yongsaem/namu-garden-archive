@@ -1,7 +1,7 @@
 export const 페라 = 
 {
         name: "페라", rarity: "4성", element: "얼음", path: "공허", image: "images/페라.webp",
-        baseStats: { hp: 988, atk: 546.84, def: 463.05, spd: 105, maxEnergy: 110 },
+        baseStats: { hp: 988, atk: 547, def: 463, spd: 105, maxEnergy: 110 },
         statNodes: { "공격력%": 18, "효과명중%": 10, "얼음피해증가%": 22.4 },
         skills: {
             technique: { name: "기선 제압", desc: "적을 바로 공격하며, 전투 진입 후 임의의 단일 적에게 페라 공격력 80%만큼의 얼음 속성 피해를 준다. 동시에 100%의 기본 확률로 각 단일 적의 방어력이 20% 감소한다. 지속 시간: 2턴" },

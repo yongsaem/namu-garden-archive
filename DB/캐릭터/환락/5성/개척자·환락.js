@@ -1,7 +1,7 @@
 export const 개척자환락 = 
 {
         name: "개척자·환락", rarity: "5성", element: "번개", path: "환락", image: "images/개척자·환락.webp",
-        baseStats: { hp: 1087, atk: 465.7, def: 630.63, spd: 106, maxEnergy: 160 },
+        baseStats: { hp: 1087, atk: 466, def: 631, spd: 106, maxEnergy: 160 },
         statNodes: { "공격력%": 28, "치명타확률%": 12, "치명타피해%": 13.3 },
         skills: {
             technique: { name: "불타오른다!", desc: "비술 사용 후 랜덤으로 다음 중 1가지 효과를 획득한다.낮은 확률로 [함박웃음] 획득: 환락도가 30% 증가한다.높은 확률로 [참을 수 없는 웃음] 획득: 환락도가 20% 증가한다.다음 전투 시작 시, 모든 아군의 환락도가 해당 수치만큼 증가한다, 지속 시간: 3턴" },

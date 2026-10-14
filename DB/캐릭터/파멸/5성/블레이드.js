@@ -1,7 +1,7 @@
 export const 블레이드 = 
 {
         name: "블레이드", rarity: "5성", element: "바람", path: "파멸", image: "images/블레이드.webp",
-        baseStats: { hp: 1358, atk: 543.31, def: 485.1, spd: 97, maxEnergy: 130 },
+        baseStats: { hp: 1358, atk: 543, def: 485, spd: 97, maxEnergy: 130 },
         statNodes: { "체력%": 28, "치명타확률%": 12, "효과저항%": 10 },
         skills: {
             technique: { name: "업도(業道)의 바람", desc: "적을 바로 공격하며, 전투 진입 후 블레이드 HP 최대치의 20%만큼 HP를 소모하고, 모든 적에게 블레이드 HP 최대치의 40%만큼 바람 속성 피해를 가한다. 현재 HP가 부족할 때 비술을 발동하면 블레이드의 현재 HP가 1pt까지 감소한다" },

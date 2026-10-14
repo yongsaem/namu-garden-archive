@@ -1,7 +1,7 @@
 export const 링스 = 
 {
         name: "링스", rarity: "4성", element: "양자", path: "풍요", image: "images/링스.webp",
-        baseStats: { hp: 1058, atk: 493.92, def: 551.25, spd: 100, maxEnergy: 100 },
+        baseStats: { hp: 1058, atk: 494, def: 551, spd: 100, maxEnergy: 100 },
         statNodes: { "체력%": 28, "방어력%": 22.5, "효과저항%": 10 },
         skills: {
             technique: { name: "초콜릿 에너지바", desc: "비술 사용 후 다음 전투 시작 시 모든 아군에게 링스 특성과 동일한 지속 치유 효과를 부여한다. 지속 시간: 2턴" },

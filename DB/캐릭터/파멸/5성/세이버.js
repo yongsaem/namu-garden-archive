@@ -1,7 +1,7 @@
 export const 세이버 = 
 {
         name: "세이버", rarity: "5성", element: "바람", path: "파멸", image: "images/세이버.webp",
-        baseStats: { hp: 1242, atk: 601.52, def: 654.88, spd: 101, maxEnergy: 360 },
+        baseStats: { hp: 1242, atk: 602, def: 655, spd: 101, maxEnergy: 360 },
         statNodes: { "체력%": 10, "치명타확률%": 12, "바람피해증가%": 22.4 },
         skills: {
             technique: { name: "기사왕의 등장", desc: "비술 사용 후 다음 전투 시작 시 세이버의 공격력이 35% 증가한다, 지속 시간: 2턴. 또한 [노심 공명]을 2pt 획득한다" },

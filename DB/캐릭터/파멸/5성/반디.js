@@ -1,7 +1,7 @@
 export const 반디 = 
 {
         name: "반디", rarity: "5성", element: "화염", path: "파멸", image: "images/반디.webp",
-        baseStats: { hp: 815, atk: 523.91, def: 776.16, spd: 104, maxEnergy: 240 },
+        baseStats: { hp: 815, atk: 524, def: 776, spd: 104, maxEnergy: 240 },
         statNodes: { "속도": 5, "격파특수효과%": 37.3, "효과저항%": 18 },
         skills: {
             technique: { name: "Δ지령-초토화 운석 폭격", desc: "공중으로 도약해 5초 동안 자유롭게 이동하며, 이때 낙하 공격을 발동하면 지속 시간을 조기 종료한다. 지속 시간이 종료되면 낙하해 즉시 일정 범위 내의 모든 적을 공격하고, 매 웨이브 시작 시 모든 적에게 화염 속성 약점을 추가한다, 지속 시간: 2턴. 이후 모든 적에게 기갑 「샘」 공격력의 200%만큼 화염 속성 피해를 가한다" },

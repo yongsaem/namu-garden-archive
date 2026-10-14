@@ -1,7 +1,7 @@
 export const 히메코 = 
 {
         name: "히메코", rarity: "5성", element: "화염", path: "지식", image: "images/히메코.webp",
-        baseStats: { hp: 1048, atk: 756.76, def: 436.59, spd: 96, maxEnergy: 120 },
+        baseStats: { hp: 1048, atk: 757, def: 437, spd: 96, maxEnergy: 120 },
         statNodes: { "공격력%": 18, "효과저항%": 10, "화염피해증가%": 22.4 },
         skills: {
             technique: { name: "불완전 연소", desc: "비술 사용 후 15초 동안 지속되는 특수영역을 하나 만든다. 특수 영역 안에 있는 적은 전투 진입 후 100%의 기본 확률로 받는 화염 속성 피해가 10% 증가한다. 지속 시간: 2턴. 아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

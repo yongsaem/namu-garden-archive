@@ -1,7 +1,7 @@
 export const 개척자화합 = 
 {
         name: "개척자·화합", rarity: "5성", element: "허수", path: "화합", image: "images/개척자·화합.webp",
-        baseStats: { hp: 1087, atk: 446.29, def: 679.14, spd: 105, maxEnergy: 140 },
+        baseStats: { hp: 1087, atk: 446, def: 679, spd: 105, maxEnergy: 140 },
         statNodes: { "격파특수효과%": 37.3, "효과저항%": 10, "허수피해증가%": 14.4 },
         skills: {
             technique: { name: "원맨 밴드, 출격!", desc: "비술 발동 후 다음 전투 시작 시 모든 아군의 격파 특수효과가 30% 증가한다. 지속 시간: 2턴" },

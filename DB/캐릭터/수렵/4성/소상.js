@@ -1,7 +1,7 @@
 export const 소상 = 
 {
         name: "소상", rarity: "4성", element: "물리", path: "수렵", image: "images/소상.webp",
-        baseStats: { hp: 917, atk: 564.48, def: 418.95, spd: 107, maxEnergy: 120 },
+        baseStats: { hp: 917, atk: 564, def: 419, spd: 107, maxEnergy: 120 },
         statNodes: { "체력%": 18, "공격력%": 28, "방어력%": 12.5 },
         skills: {
             technique: { name: "운기검경·함성", desc: "적을 바로 공격하며, 전투 진입 후 모든 적에게 소상 공격력 80%만큼의 물리 속성 피해를 준다" },

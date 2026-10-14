@@ -1,7 +1,7 @@
 export const 아젠티 = 
 {
         name: "아젠티", rarity: "5성", element: "물리", path: "지식", image: "images/아젠티.webp",
-        baseStats: { hp: 1048, atk: 737.35, def: 363.83, spd: 103, maxEnergy: 180 },
+        baseStats: { hp: 1048, atk: 737, def: 364, spd: 103, maxEnergy: 180 },
         statNodes: { "체력%": 10, "공격력%": 28, "물리피해증가%": 14.4 },
         skills: {
             technique: { name: "순수하고 고결한 선언", desc: "비술 사용 후 일정 구역 내의 적을 10초 동안 현기증 상태에 빠트린다. 현기증 상태인 적은 아군을 선공할 수 없다.현기증 상태에 빠진 적을 선공해 전투 진입 시, 모든 적에게 아젠티 공격력의 80%만큼 물리 속성 피해를 가하고, 아젠티의 에너지가 15pt 회복된다" },

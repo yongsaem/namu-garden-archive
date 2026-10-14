@@ -1,7 +1,7 @@
 export const 클라라 = 
 {
         name: "클라라", rarity: "5성", element: "물리", path: "파멸", image: "images/클라라.webp",
-        baseStats: { hp: 1242, atk: 737.35, def: 485.1, spd: 90, maxEnergy: 110 },
+        baseStats: { hp: 1242, atk: 737, def: 485, spd: 90, maxEnergy: 110 },
         statNodes: { "체력%": 10, "공격력%": 28, "물리피해증가%": 14.4 },
         skills: {
             technique: { name: "승리를 위한 작은 대가", desc: "적을 바로 공격하며, 전투 진입 후 클라라가 적에게 피격될 확률이 증가한다. 지속 시간: 2턴" },

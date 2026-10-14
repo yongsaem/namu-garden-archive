@@ -1,7 +1,7 @@
 export const 단항등황 = 
 {
         name: "단항·등황", rarity: "5성", element: "물리", path: "보존", image: "images/단항·등황.webp",
-        baseStats: { hp: 1048, atk: 582.12, def: 776.16, spd: 97, maxEnergy: 135 },
+        baseStats: { hp: 1048, atk: 582, def: 776, spd: 97, maxEnergy: 135 },
         statNodes: { "공격력%": 28, "방어력%": 22.5, "속도": 5 },
         skills: {
             technique: { name: "갈라진 땅", desc: "비술 사용 후 [전우]를 획득하고 일정 구역 내의 적을 10초 동안 현기증 상태에 빠트린다. 현기증 상태의 적은 아군을 선공하지 않는다.행동 캐릭터 변경 시 [전우]는 현재 행동 캐릭터에게 이전된다. 다음 전투 시작 시 [전우]를 보유한 캐릭터에게 자동으로 전투 스킬을 1회 발동하며, 해당 전투 스킬은 전투 스킬 포인트를 소모하지 않는다" },

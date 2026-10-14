@@ -1,7 +1,7 @@
 export const 스파키 = 
 {
         name: "스파키", rarity: "5성", element: "화염", path: "환락", image: "images/스파키.webp",
-        baseStats: { hp: 1048, atk: 640.33, def: 460.85, spd: 107, maxEnergy: 160 },
+        baseStats: { hp: 1048, atk: 640, def: 461, spd: 107, maxEnergy: 160 },
         statNodes: { "치명타확률%": 12, "치명타피해%": 13.3, "환락도": 28 },
         skills: {
             technique: { name: "수익 전환", desc: "비술 사용 후 일정 구역 내의 적을 10초 동안 [차단] 상태에 빠트린다. [차단] 상태인 적은 아군을 발견할 수 없다.[차단] 상태에 빠진 적을 선공 시, 전투 진입 후 모든 적에게 스파키 공격력의 50%만큼 화염 속성 피해를 가하고, 아군 전투 스킬 포인트를 2pt 회복한다" },

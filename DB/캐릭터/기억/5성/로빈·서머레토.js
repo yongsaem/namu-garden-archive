@@ -1,7 +1,7 @@
 export const 로빈서머레토 = 
 {
         name: "로빈·서머레토", rarity: "5성", element: "바람", path: "기억", image: "images/로빈·서머레토.webp",
-        baseStats: { hp: 1203, atk: 601.52, def: 485.1, spd: 95, maxEnergy: 140 },
+        baseStats: { hp: 1203, atk: 602, def: 485, spd: 95, maxEnergy: 140 },
         statNodes: { "체력%": 18, "속도": 14, "치명타확률%": 6.7 },
         skills: {
             technique: { name: "우리가 선율이 되어", desc: "비술 사용 후 다음 전투 시작 시 행동 게이지가 20% 증가하고, 즉시 무대 열기를 6pt 획득하며, 모든 아군이 가하는 피해를 30% 증가시킨다, 지속 시간: 2턴" },

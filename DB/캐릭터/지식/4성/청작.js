@@ -1,7 +1,7 @@
 export const 청작 = 
 {
         name: "청작", rarity: "4성", element: "양자", path: "지식", image: "images/청작.webp",
-        baseStats: { hp: 1023, atk: 652.68, def: 441, spd: 98, maxEnergy: 140 },
+        baseStats: { hp: 1023, atk: 653, def: 441, spd: 98, maxEnergy: 140 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "양자피해증가%": 14.4 },
         skills: {
             technique: { name: "나 홀로 대결의 즐거움", desc: "비술을 사용한 이후에 전투에 진입할 경우 청작이 경옥패를 2장 뽑는다" },

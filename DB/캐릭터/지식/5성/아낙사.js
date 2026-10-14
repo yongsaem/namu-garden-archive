@@ -1,7 +1,7 @@
 export const 아낙사 = 
 {
         name: "아낙사", rarity: "5성", element: "바람", path: "지식", image: "images/아낙사.webp",
-        baseStats: { hp: 970, atk: 756.76, def: 557.87, spd: 97, maxEnergy: 140 },
+        baseStats: { hp: 970, atk: 757, def: 558, spd: 97, maxEnergy: 140 },
         statNodes: { "체력%": 10, "치명타확률%": 12, "바람피해증가%": 22.4 },
         skills: {
             technique: { name: "눈동자의 색채", desc: "비술 사용 후 일정 구역 내의 적을 공포 상태에 빠트린다. 공포 상태의 적은 아낙사에게서 도망친다, 지속 시간: 10초. 아군이 공포 상태에 빠진 적을 선공하면 약점을 이용해 전투에 진입한 것으로 간주하며, 전투 진입 후 아낙사는 각 단일 적에게 공격자 속성의 약점을 1개 부여한다, 지속 시간: 3턴" },

@@ -1,7 +1,7 @@
 export const 달리아 = 
 {
         name: "달리아", rarity: "5성", element: "화염", path: "공허", image: "images/달리아.webp",
-        baseStats: { hp: 1087, atk: 679.14, def: 606.38, spd: 96, maxEnergy: 130 },
+        baseStats: { hp: 1087, atk: 679, def: 606, spd: 96, maxEnergy: 130 },
         statNodes: { "속도": 5, "격파특수효과%": 37.3, "효과저항%": 18 },
         skills: {
             technique: { name: "마음은 최고의 무덤", desc: "비술 사용 후 20초 동안 지속되는 특수 영역을 1개 만든다. 특수 영역 내의 적은 아군을 선공하지 않는다. 특수 영역 내의 적과 전투에 진입하면 달리아는 즉시 전투 스킬의 결계를 활성화하고, 약점 격파 상태의 적에게 전투 시작 시의 강인성 감소 수치를 60%의 슈퍼 격파 피해로 전환한다.아군이 만든 영역 효과는 최대 1개만 존재할 수 있다" },

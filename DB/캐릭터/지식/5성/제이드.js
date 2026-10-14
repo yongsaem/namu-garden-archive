@@ -1,7 +1,7 @@
 export const 제이드 = 
 {
         name: "제이드", rarity: "5성", element: "양자", path: "지식", image: "images/제이드.webp",
-        baseStats: { hp: 1087, atk: 659.74, def: 509.36, spd: 103, maxEnergy: 140 },
+        baseStats: { hp: 1087, atk: 660, def: 509, spd: 103, maxEnergy: 140 },
         statNodes: { "공격력%": 18, "효과저항%": 10, "양자피해증가%": 22.4 },
         skills: {
             technique: { name: "사냥꾼의 시야", desc: "비술 사용 후 일정 구역 내의 적을 10초 동안 [맹종] 상태에 빠트린다. [맹종] 상태의 적은 아군을 선공하지 않는다. [맹종] 상태의 적을 선공해 전투 진입 시 모든 [맹종] 상태의 적이 동시에 전투에 진입한다. 전투 진입 후 모든 적에게 제이드 공격력의 50%만큼 양자 속성 피해를 가하고, 즉시 [전당품]을 15스택 획득한다" },

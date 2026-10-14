@@ -1,7 +1,7 @@
 export const 토오사카린 = 
 {
         name: "토오사카 린", rarity: "5성", element: "양자", path: "지식", image: "images/토오사카 린.webp",
-        baseStats: { hp: 1048, atk: 698.54, def: 460.85, spd: 102, maxEnergy: 160 },
+        baseStats: { hp: 1048, atk: 699, def: 461, spd: 102, maxEnergy: 160 },
         statNodes: { "공격력%": 18, "치명타피해%": 37.3, "양자피해증가%": 8 },
         skills: {
             technique: { name: "전환 충전", desc: "비술 사용 후, 다음 전투 시작 시 [보석 에너지]를 10pt 획득한다" },

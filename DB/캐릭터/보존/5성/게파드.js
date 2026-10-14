@@ -1,7 +1,7 @@
 export const 게파드 = 
 {
         name: "게파드", rarity: "5성", element: "얼음", path: "보존", image: "images/게파드.webp",
-        baseStats: { hp: 1397, atk: 543.31, def: 654.88, spd: 92, maxEnergy: 100 },
+        baseStats: { hp: 1397, atk: 543, def: 655, spd: 92, maxEnergy: 100 },
         statNodes: { "방어력%": 12.5, "효과저항%": 18, "얼음피해증가%": 22.4 },
         skills: {
             technique: { name: "감정의 증표", desc: "비술 사용 후 다음 전투 시작 시 모든 아군에게 게파드 방어력 24%+150만큼의 피해를 상쇄할 수 있는 실드를 제공한다. 지속 시간: 2턴" },

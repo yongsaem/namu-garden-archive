@@ -1,7 +1,7 @@
 export const Mar7th수렵 = 
 {
         name: "Mar.7th·수렵", rarity: "4성", element: "허수", path: "수렵", image: "images/Mar.7th·수렵.webp",
-        baseStats: { hp: 1058, atk: 564.48, def: 441, spd: 102, maxEnergy: 110 },
+        baseStats: { hp: 1058, atk: 564, def: 441, spd: 102, maxEnergy: 110 },
         statNodes: { "공격력%": 28, "방어력%": 12.5, "치명타피해%": 24 },
         skills: {
             technique: { name: "일기화삼찬", desc: "Mar. 7th가 파티에 있으면 동료가 비술을 1회 발동할 때마다 다음 전투 시작 시 Mar. 7th가 충전을 1pt 획득하며, 최대 3pt 획득한다. 비술 사용 후 다음 전투 시작 시 Mar. 7th가 에너지를 30pt 회복한다" },

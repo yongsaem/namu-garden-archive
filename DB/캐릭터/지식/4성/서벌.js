@@ -1,7 +1,7 @@
 export const 서벌 = 
 {
         name: "서벌", rarity: "4성", element: "번개", path: "지식", image: "images/서벌.webp",
-        baseStats: { hp: 917, atk: 652.68, def: 374.85, spd: 104, maxEnergy: 100 },
+        baseStats: { hp: 917, atk: 653, def: 375, spd: 104, maxEnergy: 100 },
         statNodes: { "치명타확률%": 18.7, "효과명중%": 18, "효과저항%": 10 },
         skills: {
             technique: { name: "굿나잇, 벨로보그", desc: "적을 바로 공격하며, 전투 진입 후 임의의 단일 적에게 서벌 공격력 50%만큼의 번개 속성 피해를 가하고, 100%의 기본 확률로 각 단일 적을 감전 상태에 빠트린다. 지속 시간: 3턴.감전 상태의 적은 새로운 턴이 시작될 때마다 서벌 공격력 50%만큼의 번개 속성 지속 피해를 받는다" },

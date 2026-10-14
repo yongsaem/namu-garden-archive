@@ -1,7 +1,7 @@
 export const 브로냐 = 
 {
         name: "브로냐", rarity: "5성", element: "바람", path: "화합", image: "images/브로냐.webp",
-        baseStats: { hp: 1242, atk: 582.12, def: 533.61, spd: 99, maxEnergy: 120 },
+        baseStats: { hp: 1242, atk: 582, def: 534, spd: 99, maxEnergy: 120 },
         statNodes: { "치명타피해%": 24, "효과저항%": 10, "바람피해증가%": 22.4 },
         skills: {
             technique: { name: "깃발 아래", desc: "비술 발동 후 다음 전투 시작 시 모든 아군의 공격력이 15% 증가한다. 지속 시간: 2턴" },
