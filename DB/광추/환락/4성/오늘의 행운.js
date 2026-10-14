@@ -1,5 +1,5 @@
 export const 오늘의행운 = {
-        name: "오늘의 행운", rarity: "4성", path: "환락", image: "images/오늘의 행운.webp",
-        baseStats: { hp: 952.56, atk: 529.2, def: 396.9 },
+        name: "오늘의 행운", rarity: "4성", path: "환락",
+        baseStats: { hp: 952, atk: 529, def: 396 },
         skill: { name: "선", desc: "장착한 캐릭터의 치명타 확률이 12%/14%/16%/18%/20% 증가하며, 장착한 캐릭터가 환락 스킬 발동 시 환락도가 12%/14%/16%/18%/20% 증가한다, 해당 효과 최대 중첩 수: 2회" }
 };

@@ -1,5 +1,5 @@
 export const 기억속모습 = {
-        name: "기억 속 모습", rarity: "4성", path: "화합", image: "images/기억 속 모습.webp",
-        baseStats: { hp: 952.56, atk: 423.36, def: 396.9 },
+        name: "기억 속 모습", rarity: "4성", path: "화합",
+        baseStats: { hp: 952, atk: 423, def: 396 },
         skill: { name: "오래된 사진", desc: "장착한 캐릭터의 격파 특수효과가 28%/35%/42%/49%/56% 증가한다. 장착한 캐릭터가 공격 발동 후 추가로 에너지가 4/5/6/7/8pt 증가한다. 해당 효과는 단일 턴 내 중복 발동되지 않는다" }
 };

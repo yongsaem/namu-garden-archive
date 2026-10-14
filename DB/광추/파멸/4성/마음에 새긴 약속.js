@@ -1,5 +1,5 @@
 export const 마음에새긴약속 = {
-        name: "마음에 새긴 약속", rarity: "4성", path: "파멸", image: "images/마음에 새긴 약속.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "마음에 새긴 약속", rarity: "4성", path: "파멸",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "전승", desc: "장착한 캐릭터의 격파 특수효과가 28%/35%/42%/49%/56% 증가한다. 장착한 캐릭터가 필살기 발동 시 치명타 확률이 15%/18%/22%/26%/30% 증가한다, 지속 시간: 2턴" }
 };

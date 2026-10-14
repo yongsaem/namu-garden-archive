@@ -1,5 +1,5 @@
 export const 저기나여기있어 = {
-        name: "저기, 나 여기 있어", rarity: "4성", path: "풍요", image: "images/저기, 나 여기 있어.webp",
-        baseStats: { hp: 952.56, atk: 423.36, def: 396.9 },
+        name: "저기, 나 여기 있어", rarity: "4성", path: "풍요",
+        baseStats: { hp: 952, atk: 423, def: 396 },
         skill: { name: "무섭지 않아…!", desc: "장착한 캐릭터의 HP 최대치가 8%/9%/10%/11%/12% 증가한다. 장착한 캐릭터가 전투 스킬 발동 시 치유량이 16%/19%/22%/25%/28% 증가한다. 지속 시간: 2턴" }
 };

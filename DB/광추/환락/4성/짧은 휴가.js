@@ -1,5 +1,5 @@
 export const 짧은휴가 = {
-        name: "짧은 휴가", rarity: "4성", path: "환락", image: "images/짧은 휴가.webp",
-        baseStats: { hp: 952.56, atk: 423.36, def: 396.9 },
+        name: "짧은 휴가", rarity: "4성", path: "환락",
+        baseStats: { hp: 952, atk: 423, def: 396 },
         skill: { name: "초월", desc: "장착한 캐릭터의 환락도가 20%/25%/30%/35%/40% 증가한다. 장착한 캐릭터가 환락 스킬을 발동하는 중에는 목표의 방어력을 8%/10%/12%/14%/16% 무시한다" }
 };

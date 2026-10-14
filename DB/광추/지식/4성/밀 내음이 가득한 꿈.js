@@ -1,5 +1,5 @@
 export const 밀내음이가득한꿈 = {
-        name: "밀 내음이 가득한 꿈", rarity: "4성", path: "지식", image: "images/밀 내음이 가득한 꿈.webp",
-        baseStats: { hp: 952.56, atk: 529.2, def: 396.9 },
+        name: "밀 내음이 가득한 꿈", rarity: "4성", path: "지식",
+        baseStats: { hp: 952, atk: 529, def: 396 },
         skill: { name: "동경", desc: "장착한 캐릭터의 치명타 확률이 12%/14%/16%/18%/20% 증가한다. 장착한 캐릭터의 필살기와 추가 공격이 가하는 피해가 24%/28%/32%/36%/40% 증가한다" }
 };

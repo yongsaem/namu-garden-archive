@@ -1,5 +1,5 @@
 export const 과거의핏자국 = {
-        name: "과거의 핏자국", rarity: "4성", path: "파멸", image: "images/과거의 핏자국.webp",
-        baseStats: { hp: 1058.4, atk: 529.2, def: 330.75 },
+        name: "과거의 핏자국", rarity: "4성", path: "파멸",
+        baseStats: { hp: 1058, atk: 529, def: 330 },
         skill: { name: "살육", desc: "장착한 캐릭터의 치명타 확률이 12%/14%/16%/18%/20% 증가한다. 장착한 캐릭터의 전투 스킬과 필살기가 가하는 피해가 24%/28%/32%/36%/40% 증가한다" }
 };

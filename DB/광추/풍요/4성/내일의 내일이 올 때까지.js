@@ -1,5 +1,5 @@
 export const 내일의내일이올때까지 = {
-        name: "내일의 내일이 올 때까지", rarity: "4성", path: "풍요", image: "images/내일의 내일이 올 때까지.webp",
-        baseStats: { hp: 1058.4, atk: 476.28, def: 396.9 },
+        name: "내일의 내일이 올 때까지", rarity: "4성", path: "풍요",
+        baseStats: { hp: 1058, atk: 476, def: 396 },
         skill: { name: "이별", desc: "장착한 캐릭터의 치유량이 12%/15%/18%/21%/24% 증가한다. 아군의 현재 HP 백분율이 50% 이상일 시 가하는 피해가 12%/14%/16%/18%/20% 증가한다" }
 };

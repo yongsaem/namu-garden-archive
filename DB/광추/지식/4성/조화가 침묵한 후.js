@@ -1,5 +1,5 @@
 export const 조화가침묵한후 = {
-        name: "조화가 침묵한 후", rarity: "4성", path: "지식", image: "images/조화가 침묵한 후.webp",
-        baseStats: { hp: 846.72, atk: 476.28, def: 396.9 },
+        name: "조화가 침묵한 후", rarity: "4성", path: "지식",
+        baseStats: { hp: 846, atk: 476, def: 396 },
         skill: { name: "적막", desc: "장착한 캐릭터의 격파 특수효과가 28%/35%/42%/49%/56% 증가한다. 장착한 캐릭터가 필살기 발동 후 속도가 8%/10%/12%/14%/16% 증가한다, 지속 시간: 2턴" }
 };

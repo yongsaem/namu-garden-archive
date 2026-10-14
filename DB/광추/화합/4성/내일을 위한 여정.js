@@ -1,5 +1,5 @@
 export const 내일을위한여정 = {
-        name: "내일을 위한 여정", rarity: "4성", path: "화합", image: "images/내일을 위한 여정.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "내일을 위한 여정", rarity: "4성", path: "화합",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "연결", desc: "장착한 캐릭터의 공격력이 16%/20%/24%/28%/32% 증가한다. 장착한 캐릭터가 필살기를 발동한 후 가하는 피해가 18%/21%/24%/27%/30% 증가한다, 지속 시간: 1턴" }
 };
