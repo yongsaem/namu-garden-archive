@@ -512,7 +512,7 @@
 
 
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (붕스 공식 + 동적 버프 지원)
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (기본 속도 적용 완벽 수정)
         // ==========================================
         function calculateAndShowStats() {
             if(!selectedOptions.character) return; 
@@ -528,7 +528,7 @@
             const baseATK = charBase.atk + lcBase.atk;
             const baseDEF = charBase.def + lcBase.def;
             let baseSPD = charBase.spd; 
-            let extraBaseSPD = 0; 
+            let extraBaseSPD = 0; // "기본 속도" 증가분 누적 주머니
 
             const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
             const totalStats = { ...baseStatsDict };
@@ -543,9 +543,9 @@
                 else totalStats[type] = (totalStats[type] || 0) + value;
             }
 
-            // 3. DB 전용 키워드 변환기
+            // 3. ★ 핵심: 모든 버프가 거쳐 가는 키워드 변환기 ("기본 속도" 완벽 포착)
             function addBuffStat(type, value) {
-                if (!type || !value) return;
+                if (!type || value === undefined || value === null) return;
                 
                 let actualType = type;
                 if (type === "HP") actualType = "체력%";
@@ -553,7 +553,7 @@
                 else if (type === "방어력") actualType = "방어력%";
                 else if (type === "속도") actualType = "속도%";
                 else if (type === "기본 속도") {
-                    extraBaseSPD += value;
+                    extraBaseSPD += value; // ⬅️ 여기서 기본 속도 증가분을 즉시 확보!
                     return; 
                 }
                 else if (type === "에너지 회복 효율") actualType = "에너지 회복효율"; 
@@ -627,21 +627,18 @@
             });
 
             // ==========================================
-            // ★ 8. 조건부 버프(dynamicBuffs) 전용 가상 캐릭터 
+            // ★ 8. 조건부 버프(dynamicBuffs) 가상 캐릭터 연동
             // ==========================================
             const prelimChar = {
                 get finalStats() {
                     return new Proxy({}, {
                         get: (target, prop) => {
                             let k = prop === "HP" ? "체력" : prop;
-                            // 조건 확인을 위해 그 시점까지의 스탯을 실시간 합산하여 반환
                             if (k === "체력") return baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
                             if (k === "공격력") return baseATK * (1 + (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
                             if (k === "방어력") return baseDEF * (1 + (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
                             if (k === "속도") return (baseSPD + extraBaseSPD) * (1 + (relicPercent["속도%"] / 100)) + relicFlat["속도"];
-                            if (k === "에너지 최대치") return charBase.maxEnergy || 120; // 캐릭터 DB의 에너지 최대치 연동
-                            
-                            // 효과 명중, 효과 저항, 치확 등은 totalStats에 그대로 모여있음
+                            if (k === "에너지 최대치") return charBase.maxEnergy || 120; 
                             return totalStats[k] || 0;
                         }
                     });
@@ -652,8 +649,8 @@
                 if (!buffsObj) return;
                 Object.entries(buffsObj).forEach(([bType, bFunc]) => {
                     if (typeof bFunc === 'function') {
-                        const buffVal = bFunc(prelimChar, superimpose); // ⬅️ 선생님이 짜두신 함수 실행!
-                        if (buffVal > 0) addBuffStat(bType, buffVal);
+                        const buffVal = bFunc(prelimChar, superimpose); 
+                        if (buffVal) addBuffStat(bType, buffVal); // 음수(속도 감소 등)도 허용하도록 0 초과 조건 완화
                     }
                 });
             }
@@ -664,9 +661,9 @@
                 applyDynamicBuffs(lcData.dynamicBuffs, si);
             }
 
-            // 유물 동적 버프 실행 (실제 DB에 연결된 세트만)
+            // 유물 동적 버프 실행
             function applyDynamicSet(setName) {
-                if (!setName || customTwoSetEffects[setName]) return; // 2+2세트 커스텀옵션일 땐 무시
+                if (!setName || customTwoSetEffects[setName]) return; 
                 const setDbData = relicDB.find(r => r.name === setName);
                 if (setDbData && setDbData.dynamicBuffs) {
                     applyDynamicBuffs(setDbData.dynamicBuffs);
@@ -676,8 +673,8 @@
             applyDynamicSet(selectedOptions.planarOrnament);
 
 
-            // 9. ★ 스타레일 실제 데미지 공식 적용 ★
-            baseSPD = baseSPD + extraBaseSPD; 
+            // 9. ★ 스타레일 실제 데미지 공식 적용 (기본 속도 최종 반영) ★
+            baseSPD = baseSPD + extraBaseSPD; // ⬅️ 여기서 기초 속도에 "기본 속도" 증가분이 완벽히 합산됨
             baseStatsDict["속도"] = baseSPD; 
             
             totalStats["체력"] = baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
