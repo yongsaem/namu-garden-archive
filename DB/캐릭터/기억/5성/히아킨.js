@@ -1,7 +1,7 @@
 export const 히아킨 = 
 {
         name: "히아킨", rarity: "5성", element: "바람", path: "기억", image: "images/히아킨.webp",
-        baseStats: { hp: 1087, atk: 388, def: 631, spd: 110, maxEnergy: 140 },
+        baseStats: { hp: 1086, atk: 388, def: 631, spd: 110, maxEnergy: 140 },
         statNodes: { "체력%": 10, "속도": 14, "효과저항%": 18 },
         skills: {
             technique: { name: "날씨 좋고, 모든 게 귀엽고!", desc: "다음 전투 시작 시 모든 아군이 히아킨 HP 최대치의 30%+600만큼 HP를 회복하고, HP 최대치가 20% 증가한다, 지속 시간: 2턴" },
