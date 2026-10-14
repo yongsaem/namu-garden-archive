@@ -661,9 +661,10 @@
         }
 
         let currentStep = 0; 
+        // ★ 변경점: path(운명의 길)가 element(속성)보다 먼저 오며, relicSet1과 relicSet2로 분리됨
         let selectedOptions = {
-            rarity: null, element: null, path: null, character: null, lcRarity: null, 
-            lightCone: null, superimpose: null, relicSet: null, planarOrnament: null 
+            rarity: null, path: null, element: null, character: null, lcRarity: null, 
+            lightCone: null, superimpose: null, relicSet1: null, relicSet2: null, planarOrnament: null 
         };
 
         const breadcrumbArea = document.getElementById("breadcrumb-area");
@@ -672,17 +673,30 @@
         const relicInput = document.getElementById("relic-input");
         const relicDatalist = document.getElementById("relic-datalist");
 
+        // ★ 변경점: 2세트 전용 목록
+        const twoSetList = [
+            "공격력 2세트", "방어력 2세트", "최대 체력 2세트", "속도 2세트", 
+            "격파 특수효과 2세트", "치유량 보너스 2세트", "치명타 확률 2세트", "치명타 피해 2세트",
+            "물리 속성 피해 2세트", "화염 속성 피해 2세트", "얼음 속성 피해 2세트", 
+            "번개 속성 피해 2세트", "바람 속성 피해 2세트", "양자 속성 피해 2세트", "허수 속성 피해 2세트"
+        ];
+
         function renderUI() {
             breadcrumbArea.innerHTML = ""; 
             const steps = [
-                { key: 'rarity', stepIndex: 0 }, { key: 'element', stepIndex: 1 },
-                { key: 'path', stepIndex: 2 }, { key: 'character', stepIndex: 3 },
+                { key: 'rarity', stepIndex: 0 }, { key: 'path', stepIndex: 1 }, 
+                { key: 'element', stepIndex: 2 }, { key: 'character', stepIndex: 3 }, 
                 { key: 'lcRarity', stepIndex: 4 }, { key: 'lightCone', stepIndex: 5 },
-                { key: 'superimpose', stepIndex: 6 }, { key: 'relicSet', stepIndex: 7 },
-                { key: 'planarOrnament', stepIndex: 8 } // 장신구 브레드크럼 추가
+                { key: 'superimpose', stepIndex: 6 }, 
+                { key: 'relicSet1', stepIndex: 7 }, 
+                { key: 'relicSet2', stepIndex: 8 }, 
+                { key: 'planarOrnament', stepIndex: 9 } 
             ];
 
             steps.forEach(step => {
+                // 4세트를 고른 경우, 빈 값인 두 번째 2세트 태그는 그리지 않음
+                if (step.key === 'relicSet2' && selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) return;
+
                 if (selectedOptions[step.key] !== null && currentStep >= step.stepIndex) {
                     const tag = document.createElement("div");
                     tag.className = "breadcrumb-item";
@@ -698,25 +712,28 @@
                 currentSelect.innerHTML = "<option value=''>-- 선택하세요 --</option>";
                 
                 if (currentStep === 0) { stepTitle.innerText = "성급 선택"; addOptions(getAvailable(characterDB, () => true, 'rarity')); }
-                else if (currentStep === 1) { stepTitle.innerText = "속성 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity, 'element')); }
-                else if (currentStep === 2) { stepTitle.innerText = "운명의 길 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.element === selectedOptions.element, 'path')); }
-                else if (currentStep === 3) { stepTitle.innerText = "캐릭터 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.element === selectedOptions.element && c.path === selectedOptions.path, 'name')); }
+                else if (currentStep === 1) { stepTitle.innerText = "운명의 길 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity, 'path')); }
+                else if (currentStep === 2) { stepTitle.innerText = "속성 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.path === selectedOptions.path, 'element')); }
+                else if (currentStep === 3) { stepTitle.innerText = "캐릭터 선택"; addOptions(getAvailable(characterDB, c => c.rarity === selectedOptions.rarity && c.path === selectedOptions.path && c.element === selectedOptions.element, 'name')); }
                 else if (currentStep === 4) { stepTitle.innerText = "광추 성급 선택"; addOptions(getAvailable(lightConeDB, lc => lc.path === selectedOptions.path, 'rarity')); }
                 else if (currentStep === 5) { stepTitle.innerText = "광추 선택"; addOptions(getAvailable(lightConeDB, lc => lc.path === selectedOptions.path && lc.rarity === selectedOptions.lcRarity, 'name')); }
                 else if (currentStep === 6) { stepTitle.innerText = "광추 중첩 선택"; addOptions(["1중첩", "2중첩", "3중첩", "4중첩", "5중첩"]); }
-            } else if (currentStep <= 8) {
+            
+            } else if (currentStep <= 9) {
                 currentSelect.style.display = "none";
                 relicInput.style.display = "inline-block";
                 relicInput.value = ""; 
                 relicDatalist.innerHTML = ""; 
 
                 if (currentStep === 7) {
-                    stepTitle.innerText = "터널 유물(4세트) 선택";
-                    // type: 'tunnel' 인 것만 표시 (DB 세팅 필요)
-                    addDatalistOptions(getAvailable(relicDB, r => r.type === 'tunnel', 'name'));
+                    stepTitle.innerText = "터널 유물 첫 번째 세트 선택";
+                    const tunnel4Sets = getAvailable(relicDB, r => r.type === 'tunnel', 'name');
+                    addDatalistOptions([...tunnel4Sets, ...twoSetList]);
                 } else if (currentStep === 8) {
+                    stepTitle.innerText = "터널 유물 두 번째 2세트 선택";
+                    addDatalistOptions(twoSetList);
+                } else if (currentStep === 9) {
                     stepTitle.innerText = "차원 장신구(2세트) 선택";
-                    // type: 'planar' 인 것만 표시 (DB 세팅 필요)
                     addDatalistOptions(getAvailable(relicDB, r => r.type === 'accessory', 'name'));
                 }
             } else {
@@ -736,15 +753,14 @@
             if (!val || val.includes("조건에 맞는")) return; 
 
             if (currentStep === 0) selectedOptions.rarity = val;
-            else if (currentStep === 1) selectedOptions.element = val;
-            else if (currentStep === 2) selectedOptions.path = val;
+            else if (currentStep === 1) selectedOptions.path = val;
+            else if (currentStep === 2) selectedOptions.element = val;
             else if (currentStep === 3) {
                 selectedOptions.character = val;
                 const selectedCharData = characterDB.find(c => c.name === val);
                 document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
                 document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
                 
-                // 캐릭터 선택 완료 즉시 스탯창 조기 표시
                 document.getElementById("stat-panel").style.display = "block";
                 calculateAndShowStats();
             }
@@ -752,24 +768,38 @@
             else if (currentStep === 5) selectedOptions.lightCone = val;
             else if (currentStep === 6) {
                 selectedOptions.superimpose = val;
-                calculateAndShowStats(); // 광추 스탯 반영
+                calculateAndShowStats();
             }
-            else if (currentStep === 7) selectedOptions.relicSet = val;
+            else if (currentStep === 7) {
+                selectedOptions.relicSet1 = val;
+                if (val.includes("2세트")) {
+                    currentStep = 8; // 두 번째 2세트 선택창으로 이동
+                } else {
+                    selectedOptions.relicSet2 = null; 
+                    currentStep = 9; // 장신구 선택창으로 건너뜀
+                }
+                renderUI();
+                return;
+            }
             else if (currentStep === 8) {
+                selectedOptions.relicSet2 = val; 
+                currentStep = 9; 
+                renderUI();
+                return;
+            }
+            else if (currentStep === 9) {
                 selectedOptions.planarOrnament = val;
                 
-                // 8단계 장신구 선택 완료 시 브레드크럼 재렌더링 후 드롭다운 숨김
                 currentStep++;
                 renderUI(); 
                 
                 document.getElementById("relic-grid-panel").style.display = "block";
-                // 초기 로드 시 중복 방지 상태 업데이트
                 document.querySelectorAll('.relic-box').forEach(box => refreshSelectStates(box));
                 calculateAndShowStats();
                 return; 
             }
 
-            if(currentStep <= 7) currentStep++;
+            if(currentStep <= 8) currentStep++;
             renderUI();
         }
 
@@ -779,19 +809,20 @@
         function goToStep(step) {
             currentStep = step;
             if (step <= 0) selectedOptions.rarity = null;
-            if (step <= 1) selectedOptions.element = null;
-            if (step <= 2) selectedOptions.path = null;
+            if (step <= 1) selectedOptions.path = null;
+            if (step <= 2) selectedOptions.element = null;
             if (step <= 3) selectedOptions.character = null;
             if (step <= 4) selectedOptions.lcRarity = null;
             if (step <= 5) selectedOptions.lightCone = null; 
             if (step <= 6) selectedOptions.superimpose = null; 
-            if (step <= 7) selectedOptions.relicSet = null; 
-            selectedOptions.planarOrnament = null; 
+            if (step <= 7) { selectedOptions.relicSet1 = null; selectedOptions.relicSet2 = null; }
+            if (step <= 8) selectedOptions.relicSet2 = null;
+            if (step <= 9) selectedOptions.planarOrnament = null; 
             
             document.getElementById("dropdown-area").style.display = "block";
             document.getElementById("relic-grid-panel").style.display = "none"; 
             
-            if (step <= 3) { // 캐릭터 선택 전으로 돌아가면 스탯창 숨김
+            if (step <= 3) { 
                 document.getElementById("stat-panel").style.display = "none";
             }
             
@@ -807,7 +838,7 @@
             }
             
             renderUI(); 
-            calculateAndShowStats(); // 상태 변경 시 실시간 반영
+            calculateAndShowStats(); 
         }
 
         // ==========================================
@@ -817,7 +848,7 @@
             const state = {
                 step: currentStep,
                 options: selectedOptions,
-                showDetail: document.getElementById('toggle-detail-stats').checked, // 체크박스 상태 저장
+                showDetail: document.getElementById('toggle-detail-stats').checked,
                 relics: []
             };
 
@@ -848,7 +879,7 @@
             try {
                 const state = JSON.parse(saved);
                 
-                // 1. 선택 옵션 및 진행 단계 복구
+                // 선택 옵션 복구
                 selectedOptions = state.options;
                 currentStep = state.step;
                 
@@ -880,12 +911,12 @@
                     }
                 }
                 
-                if (currentStep >= 9) {
+                if (currentStep >= 10) { // 단계 수가 하나 늘어났으므로 10 이상일 때 유물 패널 표시
                     document.getElementById("dropdown-area").style.display = "none";
                     document.getElementById("relic-grid-panel").style.display = "block";
                 }
 
-                // 2. 유물 옵션 복구
+                // 유물 옵션 복구
                 const boxes = document.querySelectorAll('.relic-box');
                 state.relics.forEach((boxData, index) => {
                     if (!boxes[index]) return;
@@ -904,7 +935,6 @@
                         const typeSel = wrapper.querySelector('.sub-type-select');
                         typeSel.value = subData.type;
                         
-                        // 타입 변경 이벤트 강제 발생 (수치 목록 불러오기 위해)
                         typeSel.dispatchEvent(new Event('change', { bubbles: true }));
                         
                         setTimeout(() => {
@@ -912,7 +942,6 @@
                             const upSel = wrapper.querySelector('.sub-up-select');
                             upSel.value = subData.up;
                             
-                            // 강화 횟수 변경 이벤트 강제 발생 (강화 박스 생성 위해)
                             upSel.dispatchEvent(new Event('change', { bubbles: true }));
                             
                             setTimeout(() => {
@@ -928,13 +957,12 @@
                 });
             } catch (e) {
                 console.error("저장된 데이터를 불러오는 중 오류 발생:", e);
+                // 세이브 파일의 구조가 변경되어 에러가 날 경우 세이브 초기화
+                localStorage.removeItem('hsrSimulatorSave');
             }
         }
 
-        // 화면이나 옵션이 변경될 때마다 자동 저장 트리거
         document.addEventListener('change', saveToLocalStorage);
-        
-        // 체크박스 클릭 시 스탯창 즉시 다시 그리기
         document.getElementById('toggle-detail-stats').addEventListener('change', calculateAndShowStats);
         
         loadFromLocalStorage();
