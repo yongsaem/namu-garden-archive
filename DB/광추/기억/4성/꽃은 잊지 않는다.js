@@ -1,5 +1,5 @@
 export const 꽃은잊지않는다 = {
-        name: "꽃은 잊지 않는다", rarity: "4성", path: "기억", image: "images/꽃은 잊지 않는다.webp",
-        baseStats: { hp: 1058.4, atk: 529.2, def: 330.75 },
+        name: "꽃은 잊지 않는다", rarity: "4성", path: "기억",
+        baseStats: { hp: 1058, atk: 529, def: 330 },
         skill: { name: "서로 의지하며", desc: "장착한 캐릭터의 치명타 피해가 24%/28%/32%/36%/40% 증가한다. 장착한 캐릭터의 기억 정령이 가하는 치명타 피해가 추가로 24%/30%/36%/42%/48% 증가한다" }
 };

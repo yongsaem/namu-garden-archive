@@ -1,5 +1,5 @@
 export const 여생의첫날 = {
-        name: "여생의 첫날", rarity: "4성", path: "보존", image: "images/여생의 첫날.webp",
-        baseStats: { hp: 952.56, atk: 370.44, def: 463.05 },
+        name: "여생의 첫날", rarity: "4성", path: "보존",
+        baseStats: { hp: 952, atk: 370, def: 463 },
         skill: { name: "지금 이 순간", desc: "장착한 캐릭터의 방어력이 16%/18%/20%/22%/24% 증가한다. 전투 진입 후 모든 아군의 모든 속성 저항이 8%/9%/10%/11%/12% 증가한다. 같은 유형의 스킬 효과는 중복 적용되지 않는다" }
 };

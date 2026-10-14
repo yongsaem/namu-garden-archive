@@ -1,5 +1,5 @@
 export const 침묵만이 = {
-        name: "침묵만이", rarity: "4성", path: "수렵", image: "images/침묵만이.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "침묵만이", rarity: "4성", path: "수렵",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "기록", desc: "장착한 캐릭터의 공격력이 16%/20%/24%/28%/32% 증가한다. 필드 위의 적이 2명 이하일 경우, 장착한 캐릭터의 치명타 확률이 12%/15%/18%/21%/24% 증가한다" }
 };

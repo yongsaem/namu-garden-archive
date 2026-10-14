@@ -1,5 +1,5 @@
 export const 두사람의콘서트 = {
-        name: "두 사람의 콘서트", rarity: "4성", path: "보존", image: "images/두 사람의 콘서트.webp",
-        baseStats: { hp: 952.56, atk: 370.44, def: 463.05 },
+        name: "두 사람의 콘서트", rarity: "4성", path: "보존",
+        baseStats: { hp: 952, atk: 370, def: 463 },
         skill: { name: "격려", desc: "장착한 캐릭터의 방어력이 16%/20%/24%/28%/32% 증가한다. 필드 위에 실드를 보유한 캐릭터가 1명 있을 때마다 장착한 캐릭터가 가하는 피해가 4%/5%/6%/7%/8% 증가한다" }
 };

@@ -1,5 +1,5 @@
 export const 논검 = {
-        name: "논검", rarity: "4성", path: "수렵", image: "images/논검.webp",
-        baseStats: { hp: 952.56, atk: 476.28, def: 330.75 },
+        name: "논검", rarity: "4성", path: "수렵",
+        baseStats: { hp: 952, atk: 476, def: 330 },
         skill: { name: "각자의 답", desc: "장착한 캐릭터가 동일한 적을 여러 회 명중 후 매번 가하는 피해가 8%/10%/12%/14%/16% 증가한다. 해당 효과 최대 중첩수: 5스택. 공격 목표에 변화가 생길 경우 현재 버프 효과가 해제된다" }
 };
