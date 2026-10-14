@@ -21,7 +21,6 @@
             width: 100vw;
             height: 100vh;
             z-index: -999; /* 모든 요소보다 제일 뒤로 */
-            background-size: contain; 
             background-position: center 70%; /* 선생님이 설정하신 70% */
             background-repeat: no-repeat;
             transition: background-image 0.4s ease-in-out;
@@ -513,7 +512,7 @@
 
 
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (선택된 DB 구조 맞춤 적용)
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (붕스 공식 + 동적 버프 지원)
         // ==========================================
         function calculateAndShowStats() {
             if(!selectedOptions.character) return; 
@@ -521,71 +520,172 @@
             const charData = characterDB.find(c => c.name === selectedOptions.character) || {};
             const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone) || {};
             
-            // 1. 캐릭터 DB의 구조 변경 반영 (baseStats 서랍 안에서 꺼내기)
             const charBase = charData.baseStats || { hp: 0, atk: 0, def: 0, spd: 0 };
-            
-            // 광추도 나중에 baseStats를 쓸 수 있으니 유연하게 처리
             const lcBase = lcData.baseStats || { hp: lcData.hp || 0, atk: lcData.atk || 0, def: lcData.def || 0 };
             
+            // 1. 기초 스탯 산출
             const baseHP = charBase.hp + lcBase.hp;
             const baseATK = charBase.atk + lcBase.atk;
             const baseDEF = charBase.def + lcBase.def;
-            const baseSPD = charBase.spd;
+            let baseSPD = charBase.spd; 
+            let extraBaseSPD = 0; 
 
             const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
             const totalStats = { ...baseStatsDict };
             let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
-            let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0 };
+            let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0, "속도%": 0 }; 
 
-            // 2. ★ 행적(statNodes) 스탯 합산 반영 ★
+            // 2. 공통 합산 헬퍼 
+            function addStat(type, value) {
+                if (!type || !value) return;
+                if (relicPercent[type] !== undefined) relicPercent[type] += value;
+                else if (relicFlat[type] !== undefined) relicFlat[type] += value;
+                else totalStats[type] = (totalStats[type] || 0) + value;
+            }
+
+            // 3. DB 전용 키워드 변환기
+            function addBuffStat(type, value) {
+                if (!type || !value) return;
+                
+                let actualType = type;
+                if (type === "HP") actualType = "체력%";
+                else if (type === "공격력") actualType = "공격력%";
+                else if (type === "방어력") actualType = "방어력%";
+                else if (type === "속도") actualType = "속도%";
+                else if (type === "기본 속도") {
+                    extraBaseSPD += value;
+                    return; 
+                }
+                else if (type === "에너지 회복 효율") actualType = "에너지 회복효율"; 
+                else if (type.includes("피해 증가")) actualType = type.replace("증가", "보너스"); 
+                
+                addStat(actualType, value);
+            }
+
+            // 4. 행적(statNodes) 합산
             if (charData.statNodes) {
-                Object.entries(charData.statNodes).forEach(([tType, tVal]) => {
-                    // 효과저항% 등 기본 스탯 사전에 없는 키가 올 수 있으므로 예외 처리 추가
-                    if (relicPercent[tType] !== undefined) relicPercent[tType] += tVal;
-                    else if (relicFlat[tType] !== undefined) relicFlat[tType] += tVal;
-                    else totalStats[tType] = (totalStats[tType] || 0) + tVal;
+                Object.entries(charData.statNodes).forEach(([tType, tVal]) => addBuffStat(tType, tVal));
+            }
+
+            // 5. 광추 패시브 (autoBuffs) 합산
+            if (lcData.autoBuffs && selectedOptions.superimpose) {
+                const superimposeIndex = parseInt(selectedOptions.superimpose.replace(/[^0-9]/g, '')) - 1;
+                Object.entries(lcData.autoBuffs).forEach(([bType, bArray]) => {
+                    if (bArray && bArray[superimposeIndex] !== undefined) addBuffStat(bType, bArray[superimposeIndex]);
                 });
             }
 
-            // 3. 유물 주옵션 합산
+            // 6. 유물 세트 효과 (set2Buffs, set4Buffs) 합산
+            const customTwoSetEffects = {
+                "공격력 2세트": { "공격력": 12 }, "방어력 2세트": { "방어력": 15 },
+                "최대 체력 2세트": { "HP": 12 }, "속도 2세트": { "속도": 6 }, 
+                "격파 특수효과 2세트": { "격파 특수효과": 16 }, "치유량 보너스 2세트": { "치유량 보너스": 10 },
+                "치명타 확률 2세트": { "치명타 확률": 8 }, "치명타 피해 2세트": { "치명타 피해": 16 },
+                "물리 속성 피해 2세트": { "물리 속성 피해 증가": 10 }, "화염 속성 피해 2세트": { "화염 속성 피해 증가": 10 },
+                "얼음 속성 피해 2세트": { "얼음 속성 피해 증가": 10 }, "번개 속성 피해 2세트": { "번개 속성 피해 증가": 10 },
+                "바람 속성 피해 2세트": { "바람 속성 피해 증가": 10 }, "양자 속성 피해 2세트": { "양자 속성 피해 증가": 10 },
+                "허수 속성 피해 2세트": { "허수 속성 피해 증가": 10 }
+            };
+
+            function applyRelicSet(setName, isFourSet) {
+                if (!setName) return;
+                if (customTwoSetEffects[setName]) {
+                    Object.entries(customTwoSetEffects[setName]).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
+                    return;
+                }
+                const setDbData = relicDB.find(r => r.name === setName);
+                if (setDbData) {
+                    if (setDbData.set2Buffs) Object.entries(setDbData.set2Buffs).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
+                    if (isFourSet && setDbData.set4Buffs) Object.entries(setDbData.set4Buffs).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
+                }
+            }
+
+            if (selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) applyRelicSet(selectedOptions.relicSet1, true); 
+            else {
+                applyRelicSet(selectedOptions.relicSet1, false);
+                applyRelicSet(selectedOptions.relicSet2, false);
+            }
+            applyRelicSet(selectedOptions.planarOrnament, false);
+
+            // 7. 유물 주/부옵션 합산
             const currentMains = [
-                { type: "체력", value: 705 },
-                { type: "공격력", value: 352 },
+                { type: "체력", value: 705 }, { type: "공격력", value: 352 },
                 { type: document.getElementById("grid-main-body").value, value: userMainOptions.body[document.getElementById("grid-main-body").value] || 0 },
                 { type: document.getElementById("grid-main-feet").value, value: userMainOptions.feet[document.getElementById("grid-main-feet").value] || 0 },
                 { type: document.getElementById("grid-main-sphere").value, value: userMainOptions.sphere[document.getElementById("grid-main-sphere").value] || 0 },
                 { type: document.getElementById("grid-main-rope").value, value: userMainOptions.rope[document.getElementById("grid-main-rope").value] || 0 }
             ];
+            currentMains.forEach(opt => addStat(opt.type, opt.value));
 
-            currentMains.forEach(opt => {
-                if (opt.type && opt.value) {
-                    if (relicPercent[opt.type] !== undefined) relicPercent[opt.type] += opt.value;
-                    else if (relicFlat[opt.type] !== undefined) relicFlat[opt.type] += opt.value;
-                    else totalStats[opt.type] = (totalStats[opt.type] || 0) + opt.value;
-                }
-            });
-
-            // 4. 유물 부옵션 합산
             document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
                 const type = wrapper.querySelector('.sub-type-select').value;
                 if (type !== "선택안함") {
                     let totalVal = parseFloat(wrapper.querySelector('.sub-val-select').value) || 0;
                     wrapper.querySelectorAll('.sub-upgrade-val').forEach(upSel => { totalVal += parseFloat(upSel.value) || 0; });
-                    if (totalVal > 0) {
-                        if (relicPercent[type] !== undefined) relicPercent[type] += totalVal;
-                        else if (relicFlat[type] !== undefined) relicFlat[type] += totalVal;
-                        else totalStats[type] = (totalStats[type] || 0) + totalVal;
-                    }
+                    addStat(type, totalVal);
                 }
             });
 
-            // 5. 최종 수식 계산
-            totalStats["체력"] = baseHP + (baseHP * (relicPercent["체력%"] / 100)) + relicFlat["체력"];
-            totalStats["공격력"] = baseATK + (baseATK * (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
-            totalStats["방어력"] = baseDEF + (baseDEF * (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
-            totalStats["속도"] = baseSPD + relicFlat["속도"]; 
+            // ==========================================
+            // ★ 8. 조건부 버프(dynamicBuffs) 전용 가상 캐릭터 
+            // ==========================================
+            const prelimChar = {
+                get finalStats() {
+                    return new Proxy({}, {
+                        get: (target, prop) => {
+                            let k = prop === "HP" ? "체력" : prop;
+                            // 조건 확인을 위해 그 시점까지의 스탯을 실시간 합산하여 반환
+                            if (k === "체력") return baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
+                            if (k === "공격력") return baseATK * (1 + (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
+                            if (k === "방어력") return baseDEF * (1 + (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
+                            if (k === "속도") return (baseSPD + extraBaseSPD) * (1 + (relicPercent["속도%"] / 100)) + relicFlat["속도"];
+                            if (k === "에너지 최대치") return charBase.maxEnergy || 120; // 캐릭터 DB의 에너지 최대치 연동
+                            
+                            // 효과 명중, 효과 저항, 치확 등은 totalStats에 그대로 모여있음
+                            return totalStats[k] || 0;
+                        }
+                    });
+                }
+            };
 
-            // 정렬
+            function applyDynamicBuffs(buffsObj, superimpose = 1) {
+                if (!buffsObj) return;
+                Object.entries(buffsObj).forEach(([bType, bFunc]) => {
+                    if (typeof bFunc === 'function') {
+                        const buffVal = bFunc(prelimChar, superimpose); // ⬅️ 선생님이 짜두신 함수 실행!
+                        if (buffVal > 0) addBuffStat(bType, buffVal);
+                    }
+                });
+            }
+
+            // 광추 동적 버프 실행
+            if (lcData.dynamicBuffs && selectedOptions.superimpose) {
+                const si = parseInt(selectedOptions.superimpose.replace(/[^0-9]/g, '')) || 1;
+                applyDynamicBuffs(lcData.dynamicBuffs, si);
+            }
+
+            // 유물 동적 버프 실행 (실제 DB에 연결된 세트만)
+            function applyDynamicSet(setName) {
+                if (!setName || customTwoSetEffects[setName]) return; // 2+2세트 커스텀옵션일 땐 무시
+                const setDbData = relicDB.find(r => r.name === setName);
+                if (setDbData && setDbData.dynamicBuffs) {
+                    applyDynamicBuffs(setDbData.dynamicBuffs);
+                }
+            }
+            if (selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) applyDynamicSet(selectedOptions.relicSet1); 
+            applyDynamicSet(selectedOptions.planarOrnament);
+
+
+            // 9. ★ 스타레일 실제 데미지 공식 적용 ★
+            baseSPD = baseSPD + extraBaseSPD; 
+            baseStatsDict["속도"] = baseSPD; 
+            
+            totalStats["체력"] = baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
+            totalStats["공격력"] = baseATK * (1 + (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
+            totalStats["방어력"] = baseDEF * (1 + (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
+            totalStats["속도"] = baseSPD * (1 + (relicPercent["속도%"] / 100)) + relicFlat["속도"]; 
+
+            // 10. 정렬 및 렌더링
             const sortedKeys = Object.keys(totalStats).sort((a, b) => {
                 const idxA = statPriority.indexOf(a);
                 const idxB = statPriority.indexOf(b);
@@ -595,7 +695,6 @@
                 return a.localeCompare(b);
             });
 
-            // 렌더링
             const statListEl = document.getElementById("stat-list");
             const toggleEl = document.getElementById("toggle-detail-stats");
             const isDetailMode = toggleEl ? toggleEl.checked : false;
@@ -609,6 +708,8 @@
             `; 
 
             sortedKeys.forEach(key => {
+                if (key === "속도%") return; 
+
                 const val = totalStats[key];
                 const roundedVal = Math.round(val * 10) / 10;
                 
@@ -621,6 +722,8 @@
                     const tipBase = isPercent ? (Math.round(baseV*10)/10) + "%" : Math.floor(baseV);
                     const tipAdd = isPercent ? (Math.round(addV*10)/10) + "%" : Math.floor(addV);
                     
+                    const displayKey = key.includes("피해 보너스") ? key.replace("보너스", "증가") : key.replace("%", "");
+
                     if (isDetailMode) {
                         const detailInline = (addV > 0) 
                             ? `<div style="font-size: 14px; line-height: 1.2; margin-top: 2px;"><span style="color:#ffd700;">${tipBase}</span> <span style="color:#ffffff;">+ ${tipAdd}</span></div>` 
@@ -628,7 +731,7 @@
                             
                         statListEl.innerHTML += `
                             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 0; align-items: center;">
-                                <span style="color: #ccc;">${key.replace("%", "")}</span>
+                                <span style="color: #ccc;">${displayKey}</span>
                                 <div style="display: flex; flex-direction: column; align-items: flex-end;">
                                     <span style="font-weight: bold; color: #63b3ed; font-size: 19px;">${displayVal}</span>
                                     ${detailInline}
@@ -642,7 +745,7 @@
 
                         statListEl.innerHTML += `
                             <div class="stat-row-hover">
-                                <span style="color: #ccc;">${key.replace("%", "")}</span>
+                                <span style="color: #ccc;">${displayKey}</span>
                                 <span style="font-weight: bold; color: #63b3ed;">${displayVal}</span>
                                 <div class="custom-tooltip">${tooltipText}</div>
                             </div>
@@ -759,7 +862,7 @@
                 selectedOptions.character = val;
                 const selectedCharData = characterDB.find(c => c.name === val);
                 document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
-                document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
                 
                 document.getElementById("stat-panel").style.display = "block";
                 calculateAndShowStats();
@@ -768,15 +871,16 @@
             else if (currentStep === 5) selectedOptions.lightCone = val;
             else if (currentStep === 6) {
                 selectedOptions.superimpose = val;
+                // ★ 수정됨: 광추 관련 이미지나 텍스트를 띄우는 코드를 아예 통째로 삭제했습니다.
                 calculateAndShowStats();
             }
             else if (currentStep === 7) {
                 selectedOptions.relicSet1 = val;
                 if (val.includes("2세트")) {
-                    currentStep = 8; // 두 번째 2세트 선택창으로 이동
+                    currentStep = 8;
                 } else {
                     selectedOptions.relicSet2 = null; 
-                    currentStep = 9; // 장신구 선택창으로 건너뜀
+                    currentStep = 9; 
                 }
                 renderUI();
                 return;
@@ -805,6 +909,25 @@
 
         currentSelect.addEventListener("change", function(e) { processSelection(e.target.value); });
         relicInput.addEventListener("change", function(e) { if (e.target.value) processSelection(e.target.value); });
+        // 입력 중 탭(Tab) 키를 눌렀을 때 최상단 항목 자동 완성 및 선택
+        relicInput.addEventListener("keydown", function(e) {
+            if (e.key === "Tab") {
+                e.preventDefault(); // 기본 탭(포커스 이동) 기능 차단
+                
+                const typedText = e.target.value.trim().toLowerCase();
+                const allOptions = Array.from(relicDatalist.options).map(opt => opt.value);
+                
+                if (allOptions.length > 0) {
+                    // 입력한 글자가 포함된 첫 번째 옵션을 찾음 (아무것도 안 쳤으면 전체 목록 중 첫 번째)
+                    const match = typedText ? allOptions.find(opt => opt.toLowerCase().includes(typedText)) : allOptions[0];
+                    
+                    if (match) {
+                        e.target.value = match; // 입력창 텍스트를 찾은 결과로 강제 변경
+                        processSelection(match); // 변경된 텍스트로 선택(다음 단계 진행) 처리
+                    }
+                }
+            }
+        });
 
         function goToStep(step) {
             currentStep = step;
@@ -827,14 +950,12 @@
             }
             
             if (step <= 2) {
-                document.body.style.backgroundImage = "none";
+                document.getElementById("bg-layer").style.backgroundImage = "none";
                 document.getElementById("character-info-area").innerHTML = "";
             }
             else if (step >= 3 && step <= 5) { 
-                const lcImg = document.getElementById("lc-display-img");
-                if (lcImg) lcImg.remove(); 
                 const selectedCharData = characterDB.find(c => c.name === selectedOptions.character);
-                if (selectedCharData) document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                if (selectedCharData) document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
             }
             
             renderUI(); 
@@ -848,8 +969,7 @@
             const state = {
                 step: currentStep,
                 options: selectedOptions,
-                showDetail: document.getElementById('toggle-detail-stats').checked,
-                relics: []
+                relics: [] 
             };
 
             document.querySelectorAll('.relic-box').forEach(box => {
@@ -879,44 +999,30 @@
             try {
                 const state = JSON.parse(saved);
                 
-                // 선택 옵션 복구
                 selectedOptions = state.options;
                 currentStep = state.step;
                 
-                // 체크박스 상태 복구
-                if(state.showDetail !== undefined) {
-                    document.getElementById('toggle-detail-stats').checked = state.showDetail;
-                }
+                const toggleDetail = document.getElementById('toggle-detail-stats');
+                if (toggleDetail) toggleDetail.checked = false;
 
-                // 캐릭터/광추 이미지 복구
+                // 캐릭터 복구
                 if (selectedOptions.character) {
                     const charData = characterDB.find(c => c.name === selectedOptions.character);
                     if (charData) {
-                        document.body.style.backgroundImage = `url('${charData.image}')`;
-                        document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${charData.name}</h1>`;
+                        document.getElementById("bg-layer").style.backgroundImage = `url('${charData.image}')`;
+                        document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${charData.name}</h1>`;
                         document.getElementById("stat-panel").style.display = "block";
                     }
                 }
-                if (selectedOptions.lightCone && selectedOptions.superimpose) {
-                    const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone);
-                    if (lcData) {
-                        document.getElementById("character-info-area").innerHTML += `
-                            <div id="lc-display-img" style="position: absolute; left: 50%; transform: translateX(-50%); top: 200px; text-align: center;">
-                                <img src="${lcData.image}" alt="${lcData.name}" style="border-radius: 8px; max-width: 140px; box-shadow: 0 8px 20px rgba(0,0,0,0.7); border: 2px solid #ccc;">
-                                <h3 style="color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.9); margin-top: 5px; background-color: rgba(0,0,0,0.6); padding: 2px 8px; font-size: 11px; border-radius: 12px; display: inline-block;">
-                                    ${lcData.name} <span style="color: #ffd700;">(${selectedOptions.superimpose})</span>
-                                </h3>
-                            </div>
-                        `;
-                    }
-                }
                 
-                if (currentStep >= 10) { // 단계 수가 하나 늘어났으므로 10 이상일 때 유물 패널 표시
+                // ★ 수정됨: 새로고침 시(저장 데이터 불러올 때) 광추 흔적 띄우던 로직도 완전히 삭제했습니다.
+                
+                if (currentStep >= 10) { 
                     document.getElementById("dropdown-area").style.display = "none";
                     document.getElementById("relic-grid-panel").style.display = "block";
                 }
 
-                // 유물 옵션 복구
+                // 유물 복구
                 const boxes = document.querySelectorAll('.relic-box');
                 state.relics.forEach((boxData, index) => {
                     if (!boxes[index]) return;
@@ -950,14 +1056,13 @@
                                     if(upBoxes[vIdx]) upBoxes[vIdx].value = v;
                                 });
                                 refreshSelectStates(box);
-                                calculateAndShowStats();
+                                calculateAndShowStats(); 
                             }, 10);
                         }, 10);
                     });
                 });
             } catch (e) {
                 console.error("저장된 데이터를 불러오는 중 오류 발생:", e);
-                // 세이브 파일의 구조가 변경되어 에러가 날 경우 세이브 초기화
                 localStorage.removeItem('hsrSimulatorSave');
             }
         }
