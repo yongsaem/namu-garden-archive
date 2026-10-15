@@ -4,40 +4,40 @@
     <meta charset="UTF-8">
     <title>캐릭터 선택 시뮬레이터</title>
     <style>
-        /* 깔끔한 공무용/사내 툴 스타일의 CSS */
         body { 
             font-family: 'Malgun Gothic', sans-serif; 
             padding: 20px; 
+            padding-bottom: 60px; /* 하단 엑셀 탭 공간 확보 */
             margin: 0;
             min-height: 100vh;
-            background-color: #f0f2f5; /* 배경색만 남기고 나머지 삭제 */
+            background-color: #f0f2f5;
+            box-sizing: border-box;
         }
     
-        /* ★ 새로 추가하는 완벽 고정 배경 레이어 */
+        /* ★ 고정 배경 레이어 */
         #bg-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -999; /* 모든 요소보다 제일 뒤로 */
-            background-position: center 70%; /* 선생님이 설정하신 70% */
+            z-index: -999;
+            background-position: center 70%;
             background-repeat: no-repeat;
             transition: background-image 0.4s ease-in-out;
-            pointer-events: none; /* 클릭 방해 금지 */
+            pointer-events: none;
         }
         
-        /* 툴 영역이 화려한 배경 때문에 안 보일 수 있으니, 선택창 뒤에 반투명 박스를 깔아줍니다 */
+        /* 선택창 반투명 박스 */
         #breadcrumb-area, #dropdown-area {
-            background-color: rgba(255, 255, 255, 0.85); /* 85% 불투명도의 흰색 박스 */
+            background-color: rgba(255, 255, 255, 0.85);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: inline-block; /* 내용물 크기만큼만 박스 생성 */
+            display: inline-block;
             min-width: 300px;
         }
-        /* 선택 완료된 항목들이 작게 표시되는 영역 */
         #breadcrumb-area {
             display: flex;
             gap: 10px;
@@ -45,25 +45,22 @@
             min-height: 24px;
         }
 
-        /* 작게 변한 선택 항목의 디자인 */
         .breadcrumb-item {
             font-size: 13px;
             color: #555;
             background-color: #f1f1f1;
             padding: 4px 10px;
             border-radius: 4px;
-            cursor: pointer; /* 클릭 가능함을 표시 */
+            cursor: pointer;
             border: 1px solid #ddd;
             transition: background-color 0.2s;
         }
 
-        /* 마우스를 올렸을 때의 시각적 피드백 */
         .breadcrumb-item:hover {
             background-color: #e2e2e2;
-            text-decoration: line-through; /* 누르면 취소(돌아가기)된다는 직관적 표시 */
+            text-decoration: line-through;
         }
 
-        /* 현재 선택해야 하는 드롭다운 */
         select {
             padding: 8px;
             font-size: 15px;
@@ -72,19 +69,64 @@
             min-width: 200px;
         }
 
-        /* 라벨 텍스트 */
         .step-label {
             font-weight: bold;
             margin-bottom: 8px;
             display: block;
             color: #333;
         }
+
+        /* ==========================================
+           ★ 엑셀 스타일 좌측 하단 시트 탭 바 CSS
+           ========================================== */
+        #excel-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 38px;
+            background-color: #dcdcdc;
+            border-top: 1px solid #aaa;
+            display: flex;
+            align-items: flex-end;
+            padding-left: 15px;
+            gap: 4px;
+            z-index: 1000;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+            user-select: none;
+        }
+
+        .excel-tab {
+            padding: 6px 20px;
+            font-size: 13px;
+            color: #444;
+            background-color: #e9e9e9;
+            border: 1px solid #aaa;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .excel-tab:hover {
+            background-color: #f5f5f5;
+        }
+
+        .excel-tab.active {
+            background-color: #ffffff;
+            color: #107c41; /* 엑셀 시그니처 녹색 포인트 */
+            font-weight: bold;
+            border-top: 3px solid #107c41;
+            padding-bottom: 7px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.08);
+        }
     </style>
 </head>
 <body>
-    <!-- ★ 이 한 줄을 추가해 줍니다 -->
+    <!-- 배경 레이어 -->
     <div id="bg-layer"></div>
-    <!-- 레이아웃 컨테이너 (사이트 자체 스크롤 유도를 위해 absolute 사용) -->
+
+    <!-- 레이아웃 컨테이너 -->
     <div style="position: relative; width: 100%; min-height: 120vh;">
 
         <!-- 1. 브레드크럼 -->
@@ -101,7 +143,7 @@
         <!-- 3. 캐릭터 이미지 공간 -->
         <div id="character-info-area" style="margin-top: 10px; text-align: center;"></div>
 
-        <!-- ★ [왼쪽 패널] 최종 합산 스탯 (상세 보기 체크박스 추가) -->
+        <!-- ★ [왼쪽 패널] 최종 합산 스탯 -->
         <div id="stat-panel" style="display: none; position: absolute; left: 15px; top: 140px; background-color: rgba(20, 25, 30, 0.9); color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.8); min-width: 320px; backdrop-filter: blur(5px); z-index: 100;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #555; padding-bottom: 10px; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #ffd700; font-size: 22px;">📊 최종 스탯 <br><span style="font-size: 13px; color:#aaa; font-weight:normal;">(마우스 호버로 상세 수치 확인)</span></h3>
@@ -112,7 +154,7 @@
             <div id="stat-list" style="font-size: 18px; line-height: 2.2;"></div>
         </div>
 
-        <!-- ★ [오른쪽 패널] 1x6 세로형 유물 그리드 (가로 폭만 축소) -->
+        <!-- ★ [오른쪽 패널] 1x6 세로형 유물 그리드 -->
         <div id="relic-grid-panel" style="display: none; position: absolute; right: 15px; top: 140px; background-color: rgba(20, 25, 30, 0.85); color: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 100; width: 280px; box-sizing: border-box;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #555; padding-bottom: 4px; margin-bottom: 6px;">
                 <h3 style="margin: 0; color: #ffd700; font-size: 13px;">🛡️ 유물 옵션 세팅</h3>
@@ -120,7 +162,6 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
-                
                 <!-- 1. 머리 -->
                 <div class="relic-box" data-fixed-main="체력" style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 4px; border: 1px solid #444;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
@@ -165,7 +206,6 @@
                             <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
                         </div>
                     </div>
-                    <!-- 가로폭 1/3 토막 (width: 26%) -->
                     <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
                         <span>주옵:</span>
                         <select id="grid-main-body" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
@@ -185,7 +225,6 @@
                             <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
                         </div>
                     </div>
-                    <!-- 가로폭 1/3 토막 (width: 26%) -->
                     <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
                         <span>주옵:</span>
                         <select id="grid-main-feet" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
@@ -205,7 +244,6 @@
                             <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
                         </div>
                     </div>
-                    <!-- 가로폭 1/3 토막 (width: 26%) -->
                     <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
                         <span>주옵:</span>
                         <select id="grid-main-sphere" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
@@ -225,17 +263,23 @@
                             <label style="font-size: 9px; cursor: pointer;"><input type="checkbox" class="four-line-chk"> 4줄</label>
                         </div>
                     </div>
-                    <!-- 가로폭 1/3 토막 (width: 26%) -->
                     <div style="font-size: 9px; margin-bottom: 3px; display: flex; align-items: center; justify-content: flex-start; gap: 6px;">
                         <span>주옵:</span>
                         <select id="grid-main-rope" class="main-stat-select" style="width: 26%; padding: 0; font-size: 9px;"></select>
                     </div>
                     <div class="substats-container" id="sub-rope" style="display: flex; flex-direction: column; gap: 1px;"></div>
                 </div>
-
             </div>
         </div>
-    </div> <!-- // 레이아웃 컨테이너 끝 -->
+    </div>
+
+    <!-- ★ 좌측 하단 엑셀 시트 탭 바 (1~4번 탭) -->
+    <div id="excel-tab-bar">
+        <div class="excel-tab active" data-tab="0">캐릭터1</div>
+        <div class="excel-tab" data-tab="1">캐릭터2</div>
+        <div class="excel-tab" data-tab="2">캐릭터3</div>
+        <div class="excel-tab" data-tab="3">캐릭터4</div>
+    </div>
 
     <script type="module">
         import { CharacterDB } from './DB/캐릭터/index.js';
@@ -268,15 +312,10 @@
             "격파 특수효과": 0, "치유량 보너스": 0, "효과 명중": 0, "효과 저항": 0
         };
 
-        // 스탯 정렬 순서 우선순위
         const statPriority = ["체력", "공격력", "방어력", "속도", "치명타 확률", "치명타 피해"];
-
-        // ==========================================
-        // ★ UI 옵션 리스트 생성기
-        // ==========================================
         const optionsSubstat = ["선택안함", "체력", "공격력", "방어력", "체력%", "공격력%", "방어력%", "속도", "격파 특수효과", "효과 명중", "효과 저항", "치명타 확률", "치명타 피해"];
 
-        // ★ 수정 1: 주옵션 드롭다운 생성 시 맨 앞에 '선택안함' 기본 추가 (머리/장갑 제외 전부 미선택 상태 시작)
+        // 주옵션 드롭다운 생성 (맨 앞에 '선택안함' 기본 추가)
         function populateMainSelect(selectId, dataObj) {
             const selectEl = document.getElementById(selectId);
             if (!selectEl) return;
@@ -289,7 +328,7 @@
             selectEl.value = "선택안함";
         }
 
-        // 부옵션 라인 생성기 (절대 안 늘어나게 족쇄 채움)
+        // 부옵션 라인 생성기
         function createSubstats(containerId) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -329,7 +368,7 @@
         ["sub-head", "sub-hands", "sub-body", "sub-feet", "sub-sphere", "sub-rope"].forEach(createSubstats);
 
         // ==========================================
-        // ★ 부옵션/강화 중복 및 초과 방지 로직 (비활성화가 아닌 삭제식)
+        // ★ 부옵션/강화 중복 및 초과 방지 로직
         // ==========================================
         function refreshSelectStates(box) {
             const mainSelect = box.querySelector('.main-stat-select');
@@ -338,7 +377,6 @@
             const subTypes = Array.from(box.querySelectorAll('.sub-type-select'));
             const selectedSubs = subTypes.map(s => s.value).filter(v => v !== "선택안함");
 
-            // 1. 부옵션 종류 드롭다운 (삭제식)
             subTypes.forEach(select => {
                 const currentVal = select.value;
                 select.innerHTML = "";
@@ -353,7 +391,6 @@
                 select.value = currentVal;
             });
 
-            // 2. 강화 가능 횟수 제한 (마이너스 방지 & 삭제식)
             const chk = box.querySelector('.four-line-chk');
             const maxUpgrades = (chk && chk.checked) ? 5 : 4;
             const upSelects = Array.from(box.querySelectorAll('.sub-up-select'));
@@ -385,7 +422,6 @@
                 }
             });
 
-            // 3. 최종 카운터 텍스트 갱신
             const counter = box.querySelector('.upgrade-counter');
             if(counter) {
                 let finalUpgrades = 0;
@@ -473,7 +509,7 @@
             }
         });
 
-        // 초기화 로직
+        // 유물 파츠 초기화 로직
         function resetPiece(box) {
             box.querySelector('.four-line-chk').checked = false;
             box.querySelector('.upgrade-counter').innerText = '4회 남음';
@@ -491,6 +527,10 @@
             refreshSelectStates(box);
         }
 
+        function resetAllRelicUI() {
+            document.querySelectorAll('.relic-box').forEach(box => resetPiece(box));
+        }
+
         document.querySelectorAll('.reset-piece-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 resetPiece(e.target.closest('.relic-box'));
@@ -500,19 +540,17 @@
         });
 
         document.getElementById('reset-all-btn').addEventListener('click', () => {
-            document.querySelectorAll('.relic-box').forEach(box => resetPiece(box));
+            resetAllRelicUI();
             calculateAndShowStats();
             saveToLocalStorage();
         });
 
-
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (3가지 문제 완벽 수정)
+        // ★ 실시간 스탯 합산 및 렌더링 함수
         // ==========================================
         function calculateAndShowStats() {
             if (!selectedOptions.character) return; 
 
-            // 띄어쓰기 차이가 있어도 무조건 매칭해 주는 탐색 헬퍼
             const findInDB = (db, targetName) => {
                 if (!targetName || !db) return null;
                 const cleanTarget = String(targetName).replace(/\s+/g, '');
@@ -520,7 +558,6 @@
             };
 
             const charData = findInDB(characterDB, selectedOptions.character) || {};
-            // 광추는 5단계 이상에서 선택되어 있을 때만 적용
             const hasLightCone = Boolean(selectedOptions.lightCone && currentStep >= 5);
             const lcData = hasLightCone ? (findInDB(lightConeDB, selectedOptions.lightCone) || {}) : {};
             
@@ -539,7 +576,7 @@
             let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
             let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0, "속도%": 0 }; 
 
-            // 2. 공통 합산 헬퍼 (유물 주/부옵션용)
+            // 2. 공통 합산 헬퍼
             function addStat(type, value) {
                 if (!type || type === "선택안함" || !value) return;
                 if (relicPercent[type] !== undefined) relicPercent[type] += value;
@@ -547,7 +584,7 @@
                 else totalStats[type] = (totalStats[type] || 0) + value;
             }
 
-            // 3. ★ 모든 버프(행적/광추/유물세트)가 거쳐 가는 키워드 변환기
+            // 3. 모든 버프가 거쳐 가는 키워드 변환기
             function addBuffStat(type, value) {
                 if (!type || value === undefined || value === null || value === 0) return;
                 
@@ -569,12 +606,12 @@
                 addStat(actualType, numVal);
             }
 
-            // 4. 행적(statNodes) 합산 (캐릭터 선택 시 항상 적용)
+            // 4. 행적(statNodes) 합산
             if (charData.statNodes) {
                 Object.entries(charData.statNodes).forEach(([tType, tVal]) => addBuffStat(tType, tVal));
             }
 
-            // 5. ★ 광추 스킬 (autoBuffs) 합산 (중첩 미선택 시 1중첩 기본 적용)
+            // 5. 광추 스킬 (autoBuffs) 합산
             const currentSuperimpose = selectedOptions.superimpose 
                 ? (parseInt(String(selectedOptions.superimpose).replace(/[^0-9]/g, '')) || 1) 
                 : 1;
@@ -590,7 +627,7 @@
                 });
             }
 
-            // 6. ★ 유물 세트 효과 (set2Buffs, set4Buffs) 합산
+            // 6. 유물 세트 효과 합산
             const customTwoSetEffects = {
                 "공격력 2세트": { "공격력": 12 }, "방어력 2세트": { "방어력": 15 },
                 "최대 체력 2세트": { "HP": 12 }, "속도 2세트": { "속도": 6 }, 
@@ -615,7 +652,6 @@
                 }
             }
 
-            // 단계별로 실제로 선택된 유물 세트만 적용 (캐릭터만 고른 상태에선 절대 작동 안 함)
             if (currentStep >= 7 && selectedOptions.relicSet1) {
                 if (!selectedOptions.relicSet1.includes("2세트")) {
                     applyRelicSet(selectedOptions.relicSet1, true); 
@@ -630,7 +666,7 @@
                 applyRelicSet(selectedOptions.planarOrnament, false);
             }
 
-            // 7. ★ 유물 주/부옵션 합산 (오른쪽 유물 패널이 열리는 10단계부터만 적용! 캐릭터만 고른 상태에선 완전 배제)
+            // 7. 유물 주/부옵션 합산 (10단계 이후에만 작동)
             if (currentStep >= 10) {
                 const bodyVal = document.getElementById("grid-main-body").value;
                 const feetVal = document.getElementById("grid-main-feet").value;
@@ -657,9 +693,7 @@
                 });
             }
 
-            // ==========================================
-            // ★ 8. 조건부 버프(dynamicBuffs) 가상 캐릭터 연동
-            // ==========================================
+            // 8. 조건부 버프(dynamicBuffs) 연동
             const prelimChar = {
                 get finalStats() {
                     return new Proxy({}, {
@@ -687,12 +721,10 @@
                 });
             }
 
-            // 광추 동적 버프 실행
             if (hasLightCone && lcData.dynamicBuffs) {
                 applyDynamicBuffs(lcData.dynamicBuffs, currentSuperimpose);
             }
 
-            // 유물 동적 버프 실행
             function applyDynamicSet(setName) {
                 if (!setName || customTwoSetEffects[setName]) return; 
                 const setDbData = findInDB(relicDB, setName);
@@ -707,7 +739,7 @@
                 applyDynamicSet(selectedOptions.planarOrnament);
             }
 
-            // 9. ★ 스타레일 실제 데미지 공식 적용 (기본 속도 최종 반영) ★
+            // 9. 최종 스탯 산출
             baseSPD = baseSPD + extraBaseSPD; 
             baseStatsDict["속도"] = baseSPD; 
             
@@ -787,18 +819,38 @@
         }
 
         // ==========================================
-        // ★ 화면 진행 (UI) 로직 및 필터링
+        // ★ 멀티 탭(1~4번) 상태 관리 및 화면 진행 로직
         // ==========================================
         function getAvailable(db, condition, field) {
             const filtered = db.filter(condition);
             return [...new Set(filtered.map(item => item[field]))]; 
         }
 
+        function createEmptyOptions() {
+            return {
+                rarity: null, path: null, element: null, character: null, lcRarity: null, 
+                lightCone: null, superimpose: null, relicSet1: null, relicSet2: null, planarOrnament: null 
+            };
+        }
+
+        function createEmptyTabState() {
+            return {
+                step: 0,
+                options: createEmptyOptions(),
+                relics: null // 아직 유물 그리드가 세팅되지 않은 미입력 상태
+            };
+        }
+
+        let activeTabIndex = 0; // 현재 열려있는 탭 번호 (0 ~ 3)
+        let tabsData = [
+            createEmptyTabState(),
+            createEmptyTabState(),
+            createEmptyTabState(),
+            createEmptyTabState()
+        ];
+
         let currentStep = 0; 
-        let selectedOptions = {
-            rarity: null, path: null, element: null, character: null, lcRarity: null, 
-            lightCone: null, superimpose: null, relicSet1: null, relicSet2: null, planarOrnament: null 
-        };
+        let selectedOptions = createEmptyOptions();
 
         const breadcrumbArea = document.getElementById("breadcrumb-area");
         const stepTitle = document.getElementById("step-title");
@@ -812,6 +864,15 @@
             "물리 속성 피해 2세트", "화염 속성 피해 2세트", "얼음 속성 피해 2세트", 
             "번개 속성 피해 2세트", "바람 속성 피해 2세트", "양자 속성 피해 2세트", "허수 속성 피해 2세트"
         ];
+
+        // ★ 탭 바 이름 업데이트: 캐릭터가 선택되면 캐릭터 이름으로, 아니면 '캐릭터1~4'로 표시
+        function updateTabBarUI() {
+            document.querySelectorAll('.excel-tab').forEach((tabEl, idx) => {
+                tabEl.classList.toggle('active', idx === activeTabIndex);
+                const charName = tabsData[idx] && tabsData[idx].options && tabsData[idx].options.character;
+                tabEl.innerText = charName ? charName : `캐릭터${idx + 1}`;
+            });
+        }
 
         function renderUI() {
             breadcrumbArea.innerHTML = ""; 
@@ -838,6 +899,7 @@
             });
 
             if (currentStep <= 6) {
+                document.getElementById("dropdown-area").style.display = "inline-block";
                 currentSelect.style.display = "inline-block";
                 relicInput.style.display = "none";
                 currentSelect.innerHTML = "<option value=''>-- 선택하세요 --</option>";
@@ -851,6 +913,7 @@
                 else if (currentStep === 6) { stepTitle.innerText = "광추 중첩 선택"; addOptions(["1중첩", "2중첩", "3중첩", "4중첩", "5중첩"]); }
             
             } else if (currentStep <= 9) {
+                document.getElementById("dropdown-area").style.display = "inline-block";
                 currentSelect.style.display = "none";
                 relicInput.style.display = "inline-block";
                 relicInput.value = ""; 
@@ -870,6 +933,8 @@
             } else {
                 document.getElementById("dropdown-area").style.display = "none";
             }
+
+            updateTabBarUI();
         }
 
         function addOptions(arr) {
@@ -880,7 +945,6 @@
             arr.forEach(item => { relicDatalist.innerHTML += `<option value="${item}">`; });
         }
 
-        // ★ 수정 2: 각 단계(광추, 유물1, 유물2, 장신구) 선택 시마다 즉시 스탯창 갱신 & 저장
         function processSelection(val) {
             if (!val || val.includes("조건에 맞는")) return; 
 
@@ -889,7 +953,6 @@
             else if (currentStep === 2) selectedOptions.element = val;
             else if (currentStep === 3) {
                 selectedOptions.character = val;
-                // 캐릭터를 새로 고르면 이전 광추/유물 선택 기록 초기화
                 selectedOptions.lcRarity = null;
                 selectedOptions.lightCone = null;
                 selectedOptions.superimpose = null;
@@ -898,31 +961,33 @@
                 selectedOptions.planarOrnament = null;
 
                 const selectedCharData = characterDB.find(c => c.name === val);
-                document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
-                document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                if (selectedCharData) {
+                    document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
+                    document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                }
                 
                 document.getElementById("stat-panel").style.display = "block";
                 currentStep = 4;
+                saveToLocalStorage(); // 탭 데이터 갱신 후 탭 이름 즉시 변경
                 renderUI();
                 calculateAndShowStats();
-                saveToLocalStorage();
                 return;
             }
             else if (currentStep === 4) selectedOptions.lcRarity = val;
             else if (currentStep === 5) {
                 selectedOptions.lightCone = val;
                 currentStep = 6;
-                renderUI();
-                calculateAndShowStats(); // 광추 선택 즉시 기본 1중첩 스탯 반영
                 saveToLocalStorage();
+                renderUI();
+                calculateAndShowStats();
                 return;
             }
             else if (currentStep === 6) {
                 selectedOptions.superimpose = val;
                 currentStep = 7;
-                renderUI();
-                calculateAndShowStats(); // 중첩 반영
                 saveToLocalStorage();
+                renderUI();
+                calculateAndShowStats();
                 return;
             }
             else if (currentStep === 7) {
@@ -933,50 +998,45 @@
                     selectedOptions.relicSet2 = null; 
                     currentStep = 9; 
                 }
-                renderUI();
-                calculateAndShowStats(); // 첫 번째 유물 세트효과 즉시 반영!
                 saveToLocalStorage();
+                renderUI();
+                calculateAndShowStats();
                 return;
             }
             else if (currentStep === 8) {
                 selectedOptions.relicSet2 = val; 
                 currentStep = 9; 
-                renderUI();
-                calculateAndShowStats(); // 두 번째 2세트 효과 즉시 반영!
                 saveToLocalStorage();
+                renderUI();
+                calculateAndShowStats();
                 return;
             }
             else if (currentStep === 9) {
                 selectedOptions.planarOrnament = val;
                 currentStep = 10;
+                saveToLocalStorage();
                 renderUI(); 
                 
-                // 유물 세팅창이 처음 열릴 때 상의/신발/구체/매듭 미선택 상태 보장
                 document.getElementById("relic-grid-panel").style.display = "block";
                 document.querySelectorAll('.relic-box').forEach(box => refreshSelectStates(box));
-                calculateAndShowStats(); // 장신구 세트효과 + 머리/장갑 주옵션 반영!
-                saveToLocalStorage();
+                calculateAndShowStats();
                 return; 
             }
 
             if (currentStep <= 8) currentStep++;
-            renderUI();
             saveToLocalStorage();
+            renderUI();
         }
 
         currentSelect.addEventListener("change", function(e) { processSelection(e.target.value); });
         relicInput.addEventListener("change", function(e) { if (e.target.value) processSelection(e.target.value); });
-        // 입력 중 탭(Tab) 키를 눌렀을 때 최상단 항목 자동 완성 및 선택
         relicInput.addEventListener("keydown", function(e) {
             if (e.key === "Tab") {
                 e.preventDefault(); 
-                
                 const typedText = e.target.value.trim().toLowerCase();
                 const allOptions = Array.from(relicDatalist.options).map(opt => opt.value);
-                
                 if (allOptions.length > 0) {
                     const match = typedText ? allOptions.find(opt => opt.toLowerCase().includes(typedText)) : allOptions[0];
-                    
                     if (match) {
                         e.target.value = match; 
                         processSelection(match); 
@@ -1003,32 +1063,25 @@
             
             if (step <= 3) { 
                 document.getElementById("stat-panel").style.display = "none";
-            }
-            
-            if (step <= 2) {
                 document.getElementById("bg-layer").style.backgroundImage = "none";
                 document.getElementById("character-info-area").innerHTML = "";
-            }
-            else if (step >= 3 && step <= 5) { 
+            } else { 
                 const selectedCharData = characterDB.find(c => c.name === selectedOptions.character);
-                if (selectedCharData) document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                if (selectedCharData) {
+                    document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
+                }
             }
             
+            saveToLocalStorage();
             renderUI(); 
             calculateAndShowStats(); 
-            saveToLocalStorage();
         }
 
         // ==========================================
-        // ★ 상태 자동 저장 및 불러오기 (Local Storage)
+        // ★ 탭별 데이터 캡처 & 복원 & 전환 로직
         // ==========================================
-        function saveToLocalStorage() {
-            const state = {
-                step: currentStep,
-                options: selectedOptions,
-                relics: [] 
-            };
-
+        function captureCurrentTabToMemory() {
+            const relicsArr = [];
             document.querySelectorAll('.relic-box').forEach(box => {
                 const boxData = {
                     fourLine: box.querySelector('.four-line-chk').checked,
@@ -1044,83 +1097,171 @@
                         upVals: upVals
                     });
                 });
-                state.relics.push(boxData);
+                relicsArr.push(boxData);
             });
-            localStorage.setItem('hsrSimulatorSave', JSON.stringify(state));
+
+            tabsData[activeTabIndex] = {
+                step: currentStep,
+                options: { ...selectedOptions },
+                relics: relicsArr
+            };
         }
 
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('hsrSimulatorSave');
-            if (!saved) return;
-            
-            try {
-                const state = JSON.parse(saved);
-                
-                selectedOptions = state.options;
-                currentStep = state.step;
-                
-                const toggleDetail = document.getElementById('toggle-detail-stats');
-                if (toggleDetail) toggleDetail.checked = false;
+        function saveToLocalStorage() {
+            captureCurrentTabToMemory();
+            const fullSave = {
+                activeTabIndex: activeTabIndex,
+                tabsData: tabsData
+            };
+            localStorage.setItem('hsrSimulatorMultiTabSave', JSON.stringify(fullSave));
+            updateTabBarUI();
+        }
 
-                // 캐릭터 복구
-                if (selectedOptions.character && currentStep >= 4) {
-                    const charData = characterDB.find(c => c.name === selectedOptions.character);
-                    if (charData) {
-                        document.getElementById("bg-layer").style.backgroundImage = `url('${charData.image}')`;
-                        document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${charData.name}</h1>`;
-                        document.getElementById("stat-panel").style.display = "block";
-                    }
-                }
-                
-                if (currentStep >= 10) { 
-                    document.getElementById("dropdown-area").style.display = "none";
-                    document.getElementById("relic-grid-panel").style.display = "block";
-                }
+        // 특정 탭의 데이터를 화면(DOM)에 완벽히 입히는 함수 (동기식 복원으로 타이밍 꼬임 제로)
+        function applyTabStateToUI(tabIdx) {
+            const tabState = tabsData[tabIdx] || createEmptyTabState();
+            currentStep = tabState.step || 0;
+            selectedOptions = { ...createEmptyOptions(), ...(tabState.options || {}) };
 
-                // 유물 복구
+            // 1. 유물 UI 일단 전체 초기화 (미입력 상태 보장)
+            resetAllRelicUI();
+
+            // 2. 저장된 유물 데이터가 있다면 복원
+            if (tabState.relics && Array.isArray(tabState.relics)) {
                 const boxes = document.querySelectorAll('.relic-box');
-                state.relics.forEach((boxData, index) => {
+                tabState.relics.forEach((boxData, index) => {
                     if (!boxes[index]) return;
                     const box = boxes[index];
                     
-                    box.querySelector('.four-line-chk').checked = boxData.fourLine;
+                    box.querySelector('.four-line-chk').checked = Boolean(boxData.fourLine);
                     if (boxData.main && box.querySelector('.main-stat-select')) {
-                        // 예전 저장 데이터에 '선택안함'이 없던 시절의 값이라도 정상 복구
                         box.querySelector('.main-stat-select').value = boxData.main;
                     }
                     
                     const wrappers = box.querySelectorAll('.substat-wrapper');
-                    boxData.subs.forEach((subData, subIdx) => {
-                        if (!wrappers[subIdx]) return;
-                        const wrapper = wrappers[subIdx];
-                        
-                        const typeSel = wrapper.querySelector('.sub-type-select');
-                        typeSel.value = subData.type;
-                        
-                        typeSel.dispatchEvent(new Event('change', { bubbles: true }));
-                        
-                        setTimeout(() => {
-                            wrapper.querySelector('.sub-val-select').value = subData.val;
+                    if (boxData.subs) {
+                        boxData.subs.forEach((subData, subIdx) => {
+                            if (!wrappers[subIdx]) return;
+                            const wrapper = wrappers[subIdx];
+                            const typeSel = wrapper.querySelector('.sub-type-select');
+                            const valSel = wrapper.querySelector('.sub-val-select');
                             const upSel = wrapper.querySelector('.sub-up-select');
-                            upSel.value = subData.up;
-                            
-                            upSel.dispatchEvent(new Event('change', { bubbles: true }));
-                            
-                            setTimeout(() => {
-                                const upBoxes = wrapper.querySelectorAll('.sub-upgrade-val');
-                                subData.upVals.forEach((v, vIdx) => {
-                                    if(upBoxes[vIdx]) upBoxes[vIdx].value = v;
+                            const upContainer = wrapper.querySelector('.substat-upgrades-container');
+
+                            const sType = subData.type || "선택안함";
+                            typeSel.value = sType;
+
+                            // 부옵션 초기 수치 목록 복구
+                            valSel.innerHTML = "";
+                            if (sType === "선택안함") {
+                                valSel.innerHTML = `<option value="0">-</option>`;
+                            } else if (userSubstatValues[sType]) {
+                                userSubstatValues[sType].forEach(val => {
+                                    valSel.innerHTML += `<option value="${val}">${val}</option>`;
                                 });
-                                refreshSelectStates(box);
-                                calculateAndShowStats(); 
-                            }, 10);
-                        }, 10);
-                    });
+                                valSel.value = subData.val;
+                            }
+
+                            // 강화 횟수 및 추가 롤링 수치 복구
+                            const count = parseInt(subData.up) || 0;
+                            upSel.innerHTML = `<option value="0">+0</option><option value="1">+1</option><option value="2">+2</option><option value="3">+3</option><option value="4">+4</option><option value="5">+5</option>`;
+                            upSel.value = String(count);
+
+                            upContainer.innerHTML = "";
+                            if (sType !== "선택안함" && count > 0 && userSubstatValues[sType]) {
+                                let optionsHtml = '';
+                                userSubstatValues[sType].forEach(val => {
+                                    optionsHtml += `<option value="${val}">${val}</option>`;
+                                });
+                                for (let k = 0; k < count; k++) {
+                                    const selEl = document.createElement('select');
+                                    selEl.className = "sub-upgrade-val";
+                                    selEl.style.cssText = "width: 45px; flex: none; padding: 0 2px; font-size: 11px; background-color: #ffd700; border-radius: 2px; border: 1px solid #ccaa00; color: #000; height: 20px; box-sizing: border-box;";
+                                    selEl.innerHTML = optionsHtml;
+                                    if (subData.upVals && subData.upVals[k] !== undefined) {
+                                        selEl.value = subData.upVals[k];
+                                    }
+                                    upContainer.appendChild(selEl);
+                                }
+                            }
+                        });
+                    }
+                    refreshSelectStates(box);
                 });
+            }
+
+            // 3. 캐릭터 배경, 이름, 스탯 패널, 유물 그리드 표시 여부 복원
+            if (selectedOptions.character && currentStep >= 4) {
+                const charData = characterDB.find(c => c.name === selectedOptions.character);
+                if (charData) {
+                    document.getElementById("bg-layer").style.backgroundImage = `url('${charData.image}')`;
+                    document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${charData.name}</h1>`;
+                    document.getElementById("stat-panel").style.display = "block";
+                }
+            } else {
+                // 미입력 탭인 경우 배경과 패널 완벽 숨김
+                document.getElementById("bg-layer").style.backgroundImage = "none";
+                document.getElementById("character-info-area").innerHTML = "";
+                document.getElementById("stat-panel").style.display = "none";
+                document.getElementById("stat-list").innerHTML = "";
+            }
+
+            if (currentStep >= 10) {
+                document.getElementById("dropdown-area").style.display = "none";
+                document.getElementById("relic-grid-panel").style.display = "block";
+            } else {
+                document.getElementById("dropdown-area").style.display = "inline-block";
+                document.getElementById("relic-grid-panel").style.display = "none";
+            }
+
+            renderUI();
+            if (selectedOptions.character && currentStep >= 4) {
                 calculateAndShowStats();
+            }
+        }
+
+        // 탭 클릭 전환 함수
+        function switchTab(newTabIndex) {
+            if (newTabIndex === activeTabIndex) return;
+            // 현재 탭 상태 먼저 저장
+            captureCurrentTabToMemory();
+            // 새 탭으로 인덱스 변경 후 화면 교체
+            activeTabIndex = newTabIndex;
+            applyTabStateToUI(activeTabIndex);
+            saveToLocalStorage();
+        }
+
+        // 탭 바 클릭 이벤트 연결
+        document.querySelectorAll('.excel-tab').forEach(tabEl => {
+            tabEl.addEventListener('click', () => {
+                const targetIdx = parseInt(tabEl.getAttribute('data-tab'));
+                switchTab(targetIdx);
+            });
+        });
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('hsrSimulatorMultiTabSave');
+            if (!saved) {
+                applyTabStateToUI(0);
+                return;
+            }
+            
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.tabsData && Array.isArray(parsed.tabsData)) {
+                    tabsData = [0, 1, 2, 3].map(i => parsed.tabsData[i] || createEmptyTabState());
+                }
+                activeTabIndex = (typeof parsed.activeTabIndex === 'number' && parsed.activeTabIndex >= 0 && parsed.activeTabIndex <= 3) 
+                    ? parsed.activeTabIndex : 0;
+
+                const toggleDetail = document.getElementById('toggle-detail-stats');
+                if (toggleDetail) toggleDetail.checked = false;
+
+                applyTabStateToUI(activeTabIndex);
             } catch (e) {
-                console.error("저장된 데이터를 불러오는 중 오류 발생:", e);
-                localStorage.removeItem('hsrSimulatorSave');
+                console.error("저장된 멀티 탭 데이터를 불러오는 중 오류 발생:", e);
+                localStorage.removeItem('hsrSimulatorMultiTabSave');
+                applyTabStateToUI(0);
             }
         }
 
@@ -1128,7 +1269,6 @@
         document.getElementById('toggle-detail-stats').addEventListener('change', calculateAndShowStats);
         
         loadFromLocalStorage();
-        renderUI();
     </script>
 </body>
 </html>
