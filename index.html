@@ -276,16 +276,17 @@
         // ==========================================
         const optionsSubstat = ["선택안함", "체력", "공격력", "방어력", "체력%", "공격력%", "방어력%", "속도", "격파 특수효과", "효과 명중", "효과 저항", "치명타 확률", "치명타 피해"];
 
-        // 주옵션 드롭다운 생성 (옵션명 + 수치 표기)
+        // ★ 수정 1: 주옵션 드롭다운 생성 시 맨 앞에 '선택안함' 기본 추가 (머리/장갑 제외 전부 미선택 상태 시작)
         function populateMainSelect(selectId, dataObj) {
             const selectEl = document.getElementById(selectId);
             if (!selectEl) return;
-            selectEl.innerHTML = "";
+            selectEl.innerHTML = `<option value="선택안함">선택안함</option>`;
             Object.entries(dataObj).forEach(([key, val]) => {
-                const isPercent = key.includes("%") || key.includes("확률") || key.includes("피해") || key.includes("효율") || key.includes("명중");
+                const isPercent = key.includes("%") || key.includes("확률") || key.includes("피해") || key.includes("효율") || key.includes("명중") || key.includes("보너스") || key.includes("특수효과");
                 const displayVal = isPercent ? val + "%" : val;
                 selectEl.innerHTML += `<option value="${key}">${key} (${displayVal})</option>`;
             });
+            selectEl.value = "선택안함";
         }
 
         // 부옵션 라인 생성기 (절대 안 늘어나게 족쇄 채움)
@@ -294,17 +295,14 @@
             if (!container) return;
             container.innerHTML = "";
             for (let i = 1; i <= 4; i++) {
-                // 종류 칸: 115px (글씨가 커졌으므로 '격파 특수효과'도 넉넉히 들어감)
                 let typeSelect = `<select class="sub-type-select" style="width: 115px; min-width: 115px; max-width: 115px; flex: none; padding: 0 2px; font-size: 11px; background-color: #f0f0f0; border-radius: 2px; border: none; color: #000; height: 20px; box-sizing: border-box;">`;
                 optionsSubstat.forEach(opt => { typeSelect += `<option value="${opt}">${opt}</option>`; });
                 typeSelect += `</select>`;
                 
-                // 수치 칸: 55px
                 let valSelect = `<select class="sub-val-select" style="width: 55px; min-width: 55px; max-width: 55px; flex: none; padding: 0 2px; font-size: 11px; background-color: #f0f0f0; border-radius: 2px; border: none; color: #000; height: 20px; box-sizing: border-box;">
                     <option value="0">-</option>
                 </select>`;
 
-                // 강화 횟수 칸: 45px
                 let upSelect = `<select class="sub-up-select" style="width: 45px; min-width: 45px; max-width: 45px; flex: none; padding: 0 2px; font-size: 11px; background-color: #ffd700; border-radius: 2px; border: none; color: #000; font-weight: bold; height: 20px; box-sizing: border-box;">
                     <option value="0">+0</option><option value="1">+1</option><option value="2">+2</option>
                     <option value="3">+3</option><option value="4">+4</option><option value="5">+5</option>
@@ -343,12 +341,11 @@
             // 1. 부옵션 종류 드롭다운 (삭제식)
             subTypes.forEach(select => {
                 const currentVal = select.value;
-                select.innerHTML = ""; // 기존 옵션 싹 다 지우기
+                select.innerHTML = "";
                 select.add(new Option("선택안함", "선택안함"));
                 
                 optionsSubstat.forEach(opt => {
                     if (opt === "선택안함") return;
-                    // 현재 선택된 값이거나, 주옵과 겹치지 않으면서 다른 줄에서도 안 고른 옵션만 '생성'
                     if (opt === currentVal || (opt !== mainVal && !selectedSubs.includes(opt))) {
                         select.add(new Option(opt, opt));
                     }
@@ -372,19 +369,16 @@
                 
                 let allowedMax = 0;
                 if (typeVal !== "선택안함") {
-                    // 현재 선택한 수치 + 남은 횟수까지만 옵션 생성 (게임 최대치인 5까지만)
                     allowedMax = Math.min(5, currentVal + Math.max(0, remain));
                 }
                 
-                select.innerHTML = ""; // 기존 횟수 옵션 싹 다 지우기
+                select.innerHTML = "";
                 for (let i = 0; i <= allowedMax; i++) {
                     select.add(new Option(`+${i}`, i));
                 }
                 
-                // 만약 4줄 체크 해제 등으로 횟수가 초과되었다면, 최대 허용치로 강제 교정
                 if (currentVal > allowedMax) {
                     select.value = allowedMax;
-                    // 값이 강제로 변했으므로 변경 이벤트 발생시켜 연쇄 처리
                     setTimeout(() => select.dispatchEvent(new Event('change', {bubbles:true})), 0);
                 } else {
                     select.value = currentVal;
@@ -454,7 +448,6 @@
                 }
             }
             
-            // 변경사항 발생 시: 카운터 갱신 -> 중복방지 갱신 -> 스탯 갱신
             if (box && (target.classList.contains('sub-type-select') || 
                         target.classList.contains('sub-val-select') || 
                         target.classList.contains('sub-up-select') || 
@@ -487,7 +480,7 @@
             box.querySelector('.upgrade-counter').style.color = '#aaa';
             
             const mainSel = box.querySelector('.main-stat-select');
-            if(mainSel) mainSel.selectedIndex = 0;
+            if(mainSel) mainSel.value = "선택안함";
 
             box.querySelectorAll('.substat-wrapper').forEach(wrapper => {
                 wrapper.querySelector('.sub-type-select').value = "선택안함";
@@ -502,80 +495,102 @@
             btn.addEventListener('click', (e) => {
                 resetPiece(e.target.closest('.relic-box'));
                 calculateAndShowStats();
+                saveToLocalStorage();
             });
         });
 
         document.getElementById('reset-all-btn').addEventListener('click', () => {
             document.querySelectorAll('.relic-box').forEach(box => resetPiece(box));
             calculateAndShowStats();
+            saveToLocalStorage();
         });
 
 
         // ==========================================
-        // ★ 실시간 스탯 합산 및 렌더링 함수 (기본 속도 적용 완벽 수정)
+        // ★ 실시간 스탯 합산 및 렌더링 함수 (3가지 문제 완벽 수정)
         // ==========================================
         function calculateAndShowStats() {
-            if(!selectedOptions.character) return; 
+            if (!selectedOptions.character) return; 
 
-            const charData = characterDB.find(c => c.name === selectedOptions.character) || {};
-            const lcData = lightConeDB.find(lc => lc.name === selectedOptions.lightCone) || {};
+            // 띄어쓰기 차이가 있어도 무조건 매칭해 주는 탐색 헬퍼
+            const findInDB = (db, targetName) => {
+                if (!targetName || !db) return null;
+                const cleanTarget = String(targetName).replace(/\s+/g, '');
+                return db.find(item => item && item.name && String(item.name).replace(/\s+/g, '') === cleanTarget) || null;
+            };
+
+            const charData = findInDB(characterDB, selectedOptions.character) || {};
+            // 광추는 5단계 이상에서 선택되어 있을 때만 적용
+            const hasLightCone = Boolean(selectedOptions.lightCone && currentStep >= 5);
+            const lcData = hasLightCone ? (findInDB(lightConeDB, selectedOptions.lightCone) || {}) : {};
             
             const charBase = charData.baseStats || { hp: 0, atk: 0, def: 0, spd: 0 };
-            const lcBase = lcData.baseStats || { hp: lcData.hp || 0, atk: lcData.atk || 0, def: lcData.def || 0 };
+            const lcBase = hasLightCone ? (lcData.baseStats || { hp: lcData.hp || 0, atk: lcData.atk || 0, def: lcData.def || 0 }) : { hp: 0, atk: 0, def: 0 };
             
             // 1. 기초 스탯 산출
             const baseHP = charBase.hp + lcBase.hp;
             const baseATK = charBase.atk + lcBase.atk;
             const baseDEF = charBase.def + lcBase.def;
             let baseSPD = charBase.spd; 
-            let extraBaseSPD = 0; // "기본 속도" 증가분 누적 주머니
+            let extraBaseSPD = 0; 
 
             const baseStatsDict = { "체력": baseHP, "공격력": baseATK, "방어력": baseDEF, "속도": baseSPD, ...defaultBaseStats };
             const totalStats = { ...baseStatsDict };
             let relicFlat = { "체력": 0, "공격력": 0, "방어력": 0, "속도": 0 };
             let relicPercent = { "체력%": 0, "공격력%": 0, "방어력%": 0, "속도%": 0 }; 
 
-            // 2. 공통 합산 헬퍼 
+            // 2. 공통 합산 헬퍼 (유물 주/부옵션용)
             function addStat(type, value) {
-                if (!type || !value) return;
+                if (!type || type === "선택안함" || !value) return;
                 if (relicPercent[type] !== undefined) relicPercent[type] += value;
                 else if (relicFlat[type] !== undefined) relicFlat[type] += value;
                 else totalStats[type] = (totalStats[type] || 0) + value;
             }
 
-            // 3. ★ 핵심: 모든 버프가 거쳐 가는 키워드 변환기 ("기본 속도" 완벽 포착)
+            // 3. ★ 모든 버프(행적/광추/유물세트)가 거쳐 가는 키워드 변환기
             function addBuffStat(type, value) {
-                if (!type || value === undefined || value === null) return;
+                if (!type || value === undefined || value === null || value === 0) return;
                 
-                let actualType = type;
-                if (type === "HP") actualType = "체력%";
-                else if (type === "공격력") actualType = "공격력%";
-                else if (type === "방어력") actualType = "방어력%";
-                else if (type === "속도") actualType = "속도%";
-                else if (type === "기본 속도") {
-                    extraBaseSPD += value; // ⬅️ 여기서 기본 속도 증가분을 즉시 확보!
+                let actualType = String(type).trim();
+                const numVal = Number(value);
+                if (isNaN(numVal)) return;
+
+                if (actualType === "HP" || actualType === "체력") actualType = "체력%";
+                else if (actualType === "공격력") actualType = "공격력%";
+                else if (actualType === "방어력") actualType = "방어력%";
+                else if (actualType === "속도") actualType = "속도%";
+                else if (actualType === "기본 속도" || actualType === "기본속도") {
+                    extraBaseSPD += numVal;
                     return; 
                 }
-                else if (type === "에너지 회복 효율") actualType = "에너지 회복효율"; 
-                else if (type.includes("피해 증가")) actualType = type.replace("증가", "보너스"); 
+                else if (actualType === "에너지 회복 효율") actualType = "에너지 회복효율"; 
+                else if (actualType.includes("피해 증가")) actualType = actualType.replace("증가", "보너스"); 
                 
-                addStat(actualType, value);
+                addStat(actualType, numVal);
             }
 
-            // 4. 행적(statNodes) 합산
+            // 4. 행적(statNodes) 합산 (캐릭터 선택 시 항상 적용)
             if (charData.statNodes) {
                 Object.entries(charData.statNodes).forEach(([tType, tVal]) => addBuffStat(tType, tVal));
             }
 
-            // 5. 광추 패시브 (autoBuffs) 합산
-            if (lcData.autoBuffs && selectedOptions.superimpose) {
-                const superimposeIndex = parseInt(selectedOptions.superimpose.replace(/[^0-9]/g, '')) - 1;
+            // 5. ★ 광추 스킬 (autoBuffs) 합산 (중첩 미선택 시 1중첩 기본 적용)
+            const currentSuperimpose = selectedOptions.superimpose 
+                ? (parseInt(String(selectedOptions.superimpose).replace(/[^0-9]/g, '')) || 1) 
+                : 1;
+            const superimposeIndex = Math.max(0, Math.min(4, currentSuperimpose - 1));
+
+            if (hasLightCone && lcData.autoBuffs) {
                 Object.entries(lcData.autoBuffs).forEach(([bType, bArray]) => {
-                    if (bArray && bArray[superimposeIndex] !== undefined) addBuffStat(bType, bArray[superimposeIndex]);
+                    if (Array.isArray(bArray) && bArray[superimposeIndex] !== undefined) {
+                        addBuffStat(bType, bArray[superimposeIndex]);
+                    } else if (typeof bArray === 'number') {
+                        addBuffStat(bType, bArray);
+                    }
                 });
             }
 
-            // 6. 유물 세트 효과 (set2Buffs, set4Buffs) 합산
+            // 6. ★ 유물 세트 효과 (set2Buffs, set4Buffs) 합산
             const customTwoSetEffects = {
                 "공격력 2세트": { "공격력": 12 }, "방어력 2세트": { "방어력": 15 },
                 "최대 체력 2세트": { "HP": 12 }, "속도 2세트": { "속도": 6 }, 
@@ -593,38 +608,54 @@
                     Object.entries(customTwoSetEffects[setName]).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
                     return;
                 }
-                const setDbData = relicDB.find(r => r.name === setName);
+                const setDbData = findInDB(relicDB, setName);
                 if (setDbData) {
                     if (setDbData.set2Buffs) Object.entries(setDbData.set2Buffs).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
                     if (isFourSet && setDbData.set4Buffs) Object.entries(setDbData.set4Buffs).forEach(([sType, sVal]) => addBuffStat(sType, sVal));
                 }
             }
 
-            if (selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) applyRelicSet(selectedOptions.relicSet1, true); 
-            else {
-                applyRelicSet(selectedOptions.relicSet1, false);
-                applyRelicSet(selectedOptions.relicSet2, false);
-            }
-            applyRelicSet(selectedOptions.planarOrnament, false);
-
-            // 7. 유물 주/부옵션 합산
-            const currentMains = [
-                { type: "체력", value: 705 }, { type: "공격력", value: 352 },
-                { type: document.getElementById("grid-main-body").value, value: userMainOptions.body[document.getElementById("grid-main-body").value] || 0 },
-                { type: document.getElementById("grid-main-feet").value, value: userMainOptions.feet[document.getElementById("grid-main-feet").value] || 0 },
-                { type: document.getElementById("grid-main-sphere").value, value: userMainOptions.sphere[document.getElementById("grid-main-sphere").value] || 0 },
-                { type: document.getElementById("grid-main-rope").value, value: userMainOptions.rope[document.getElementById("grid-main-rope").value] || 0 }
-            ];
-            currentMains.forEach(opt => addStat(opt.type, opt.value));
-
-            document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
-                const type = wrapper.querySelector('.sub-type-select').value;
-                if (type !== "선택안함") {
-                    let totalVal = parseFloat(wrapper.querySelector('.sub-val-select').value) || 0;
-                    wrapper.querySelectorAll('.sub-upgrade-val').forEach(upSel => { totalVal += parseFloat(upSel.value) || 0; });
-                    addStat(type, totalVal);
+            // 단계별로 실제로 선택된 유물 세트만 적용 (캐릭터만 고른 상태에선 절대 작동 안 함)
+            if (currentStep >= 7 && selectedOptions.relicSet1) {
+                if (!selectedOptions.relicSet1.includes("2세트")) {
+                    applyRelicSet(selectedOptions.relicSet1, true); 
+                } else {
+                    applyRelicSet(selectedOptions.relicSet1, false);
+                    if (currentStep >= 8 && selectedOptions.relicSet2) {
+                        applyRelicSet(selectedOptions.relicSet2, false);
+                    }
                 }
-            });
+            }
+            if (currentStep >= 9 && selectedOptions.planarOrnament) {
+                applyRelicSet(selectedOptions.planarOrnament, false);
+            }
+
+            // 7. ★ 유물 주/부옵션 합산 (오른쪽 유물 패널이 열리는 10단계부터만 적용! 캐릭터만 고른 상태에선 완전 배제)
+            if (currentStep >= 10) {
+                const bodyVal = document.getElementById("grid-main-body").value;
+                const feetVal = document.getElementById("grid-main-feet").value;
+                const sphereVal = document.getElementById("grid-main-sphere").value;
+                const ropeVal = document.getElementById("grid-main-rope").value;
+
+                const currentMains = [
+                    { type: "체력", value: 705 }, 
+                    { type: "공격력", value: 352 },
+                    { type: bodyVal, value: userMainOptions.body[bodyVal] || 0 },
+                    { type: feetVal, value: userMainOptions.feet[feetVal] || 0 },
+                    { type: sphereVal, value: userMainOptions.sphere[sphereVal] || 0 },
+                    { type: ropeVal, value: userMainOptions.rope[ropeVal] || 0 }
+                ];
+                currentMains.forEach(opt => addStat(opt.type, opt.value));
+
+                document.querySelectorAll('.substat-wrapper').forEach(wrapper => {
+                    const type = wrapper.querySelector('.sub-type-select').value;
+                    if (type !== "선택안함") {
+                        let totalVal = parseFloat(wrapper.querySelector('.sub-val-select').value) || 0;
+                        wrapper.querySelectorAll('.sub-upgrade-val').forEach(upSel => { totalVal += parseFloat(upSel.value) || 0; });
+                        addStat(type, totalVal);
+                    }
+                });
+            }
 
             // ==========================================
             // ★ 8. 조건부 버프(dynamicBuffs) 가상 캐릭터 연동
@@ -633,12 +664,13 @@
                 get finalStats() {
                     return new Proxy({}, {
                         get: (target, prop) => {
-                            let k = prop === "HP" ? "체력" : prop;
-                            if (k === "체력") return baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
+                            let k = String(prop).trim();
+                            if (k === "HP" || k === "체력") return baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
                             if (k === "공격력") return baseATK * (1 + (relicPercent["공격력%"] / 100)) + relicFlat["공격력"];
                             if (k === "방어력") return baseDEF * (1 + (relicPercent["방어력%"] / 100)) + relicFlat["방어력"];
                             if (k === "속도") return (baseSPD + extraBaseSPD) * (1 + (relicPercent["속도%"] / 100)) + relicFlat["속도"];
-                            if (k === "에너지 최대치") return charBase.maxEnergy || 120; 
+                            if (k === "에너지 최대치") return charBase.maxEnergy || charData.maxEnergy || 120; 
+                            if (k === "에너지 회복 효율") k = "에너지 회복효율";
                             return totalStats[k] || 0;
                         }
                     });
@@ -650,31 +682,33 @@
                 Object.entries(buffsObj).forEach(([bType, bFunc]) => {
                     if (typeof bFunc === 'function') {
                         const buffVal = bFunc(prelimChar, superimpose); 
-                        if (buffVal) addBuffStat(bType, buffVal); // 음수(속도 감소 등)도 허용하도록 0 초과 조건 완화
+                        if (buffVal) addBuffStat(bType, buffVal); 
                     }
                 });
             }
 
             // 광추 동적 버프 실행
-            if (lcData.dynamicBuffs && selectedOptions.superimpose) {
-                const si = parseInt(selectedOptions.superimpose.replace(/[^0-9]/g, '')) || 1;
-                applyDynamicBuffs(lcData.dynamicBuffs, si);
+            if (hasLightCone && lcData.dynamicBuffs) {
+                applyDynamicBuffs(lcData.dynamicBuffs, currentSuperimpose);
             }
 
             // 유물 동적 버프 실행
             function applyDynamicSet(setName) {
                 if (!setName || customTwoSetEffects[setName]) return; 
-                const setDbData = relicDB.find(r => r.name === setName);
+                const setDbData = findInDB(relicDB, setName);
                 if (setDbData && setDbData.dynamicBuffs) {
                     applyDynamicBuffs(setDbData.dynamicBuffs);
                 }
             }
-            if (selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) applyDynamicSet(selectedOptions.relicSet1); 
-            applyDynamicSet(selectedOptions.planarOrnament);
-
+            if (currentStep >= 7 && selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) {
+                applyDynamicSet(selectedOptions.relicSet1); 
+            }
+            if (currentStep >= 9 && selectedOptions.planarOrnament) {
+                applyDynamicSet(selectedOptions.planarOrnament);
+            }
 
             // 9. ★ 스타레일 실제 데미지 공식 적용 (기본 속도 최종 반영) ★
-            baseSPD = baseSPD + extraBaseSPD; // ⬅️ 여기서 기초 속도에 "기본 속도" 증가분이 완벽히 합산됨
+            baseSPD = baseSPD + extraBaseSPD; 
             baseStatsDict["속도"] = baseSPD; 
             
             totalStats["체력"] = baseHP * (1 + (relicPercent["체력%"] / 100)) + relicFlat["체력"];
@@ -711,7 +745,7 @@
                 const roundedVal = Math.round(val * 10) / 10;
                 
                 if (roundedVal !== 0 || baseStatsDict[key] !== undefined || (charData.statNodes && charData.statNodes[key])) {
-                    const isPercent = key.includes("%") || ["치명타 확률", "치명타 피해", "효과 명중", "효과 저항", "격파 특수효과", "치유량 보너스", "에너지 회복효율"].includes(key) || key.includes("피해 보너스");
+                    const isPercent = key.includes("%") || ["치명타 확률", "치명타 피해", "효과 명중", "효과 저항", "격파 특수효과", "치유량 보너스", "에너지 회복효율", "환락도"].includes(key) || key.includes("피해 보너스");
                     const displayVal = isPercent ? roundedVal + "%" : Math.floor(roundedVal);
                     
                     const baseV = baseStatsDict[key] || 0;
@@ -761,7 +795,6 @@
         }
 
         let currentStep = 0; 
-        // ★ 변경점: path(운명의 길)가 element(속성)보다 먼저 오며, relicSet1과 relicSet2로 분리됨
         let selectedOptions = {
             rarity: null, path: null, element: null, character: null, lcRarity: null, 
             lightCone: null, superimpose: null, relicSet1: null, relicSet2: null, planarOrnament: null 
@@ -773,7 +806,6 @@
         const relicInput = document.getElementById("relic-input");
         const relicDatalist = document.getElementById("relic-datalist");
 
-        // ★ 변경점: 2세트 전용 목록
         const twoSetList = [
             "공격력 2세트", "방어력 2세트", "최대 체력 2세트", "속도 2세트", 
             "격파 특수효과 2세트", "치유량 보너스 2세트", "치명타 확률 2세트", "치명타 피해 2세트",
@@ -794,10 +826,9 @@
             ];
 
             steps.forEach(step => {
-                // 4세트를 고른 경우, 빈 값인 두 번째 2세트 태그는 그리지 않음
                 if (step.key === 'relicSet2' && selectedOptions.relicSet1 && !selectedOptions.relicSet1.includes("2세트")) return;
 
-                if (selectedOptions[step.key] !== null && currentStep >= step.stepIndex) {
+                if (selectedOptions[step.key] !== null && currentStep > step.stepIndex) {
                     const tag = document.createElement("div");
                     tag.className = "breadcrumb-item";
                     tag.innerText = selectedOptions[step.key];
@@ -849,6 +880,7 @@
             arr.forEach(item => { relicDatalist.innerHTML += `<option value="${item}">`; });
         }
 
+        // ★ 수정 2: 각 단계(광추, 유물1, 유물2, 장신구) 선택 시마다 즉시 스탯창 갱신 & 저장
         function processSelection(val) {
             if (!val || val.includes("조건에 맞는")) return; 
 
@@ -857,19 +889,41 @@
             else if (currentStep === 2) selectedOptions.element = val;
             else if (currentStep === 3) {
                 selectedOptions.character = val;
+                // 캐릭터를 새로 고르면 이전 광추/유물 선택 기록 초기화
+                selectedOptions.lcRarity = null;
+                selectedOptions.lightCone = null;
+                selectedOptions.superimpose = null;
+                selectedOptions.relicSet1 = null;
+                selectedOptions.relicSet2 = null;
+                selectedOptions.planarOrnament = null;
+
                 const selectedCharData = characterDB.find(c => c.name === val);
                 document.getElementById("bg-layer").style.backgroundImage = `url('${selectedCharData.image}')`;
                 document.getElementById("character-info-area").innerHTML = `<h1 style="color: #fff; margin-top: 15px; margin-bottom: 5px; font-size: 32px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">${selectedCharData.name}</h1>`;
                 
                 document.getElementById("stat-panel").style.display = "block";
+                currentStep = 4;
+                renderUI();
                 calculateAndShowStats();
+                saveToLocalStorage();
+                return;
             }
             else if (currentStep === 4) selectedOptions.lcRarity = val;
-            else if (currentStep === 5) selectedOptions.lightCone = val;
+            else if (currentStep === 5) {
+                selectedOptions.lightCone = val;
+                currentStep = 6;
+                renderUI();
+                calculateAndShowStats(); // 광추 선택 즉시 기본 1중첩 스탯 반영
+                saveToLocalStorage();
+                return;
+            }
             else if (currentStep === 6) {
                 selectedOptions.superimpose = val;
-                // ★ 수정됨: 광추 관련 이미지나 텍스트를 띄우는 코드를 아예 통째로 삭제했습니다.
-                calculateAndShowStats();
+                currentStep = 7;
+                renderUI();
+                calculateAndShowStats(); // 중첩 반영
+                saveToLocalStorage();
+                return;
             }
             else if (currentStep === 7) {
                 selectedOptions.relicSet1 = val;
@@ -880,28 +934,34 @@
                     currentStep = 9; 
                 }
                 renderUI();
+                calculateAndShowStats(); // 첫 번째 유물 세트효과 즉시 반영!
+                saveToLocalStorage();
                 return;
             }
             else if (currentStep === 8) {
                 selectedOptions.relicSet2 = val; 
                 currentStep = 9; 
                 renderUI();
+                calculateAndShowStats(); // 두 번째 2세트 효과 즉시 반영!
+                saveToLocalStorage();
                 return;
             }
             else if (currentStep === 9) {
                 selectedOptions.planarOrnament = val;
-                
-                currentStep++;
+                currentStep = 10;
                 renderUI(); 
                 
+                // 유물 세팅창이 처음 열릴 때 상의/신발/구체/매듭 미선택 상태 보장
                 document.getElementById("relic-grid-panel").style.display = "block";
                 document.querySelectorAll('.relic-box').forEach(box => refreshSelectStates(box));
-                calculateAndShowStats();
+                calculateAndShowStats(); // 장신구 세트효과 + 머리/장갑 주옵션 반영!
+                saveToLocalStorage();
                 return; 
             }
 
-            if(currentStep <= 8) currentStep++;
+            if (currentStep <= 8) currentStep++;
             renderUI();
+            saveToLocalStorage();
         }
 
         currentSelect.addEventListener("change", function(e) { processSelection(e.target.value); });
@@ -909,18 +969,17 @@
         // 입력 중 탭(Tab) 키를 눌렀을 때 최상단 항목 자동 완성 및 선택
         relicInput.addEventListener("keydown", function(e) {
             if (e.key === "Tab") {
-                e.preventDefault(); // 기본 탭(포커스 이동) 기능 차단
+                e.preventDefault(); 
                 
                 const typedText = e.target.value.trim().toLowerCase();
                 const allOptions = Array.from(relicDatalist.options).map(opt => opt.value);
                 
                 if (allOptions.length > 0) {
-                    // 입력한 글자가 포함된 첫 번째 옵션을 찾음 (아무것도 안 쳤으면 전체 목록 중 첫 번째)
                     const match = typedText ? allOptions.find(opt => opt.toLowerCase().includes(typedText)) : allOptions[0];
                     
                     if (match) {
-                        e.target.value = match; // 입력창 텍스트를 찾은 결과로 강제 변경
-                        processSelection(match); // 변경된 텍스트로 선택(다음 단계 진행) 처리
+                        e.target.value = match; 
+                        processSelection(match); 
                     }
                 }
             }
@@ -939,7 +998,7 @@
             if (step <= 8) selectedOptions.relicSet2 = null;
             if (step <= 9) selectedOptions.planarOrnament = null; 
             
-            document.getElementById("dropdown-area").style.display = "block";
+            document.getElementById("dropdown-area").style.display = "inline-block";
             document.getElementById("relic-grid-panel").style.display = "none"; 
             
             if (step <= 3) { 
@@ -957,6 +1016,7 @@
             
             renderUI(); 
             calculateAndShowStats(); 
+            saveToLocalStorage();
         }
 
         // ==========================================
@@ -1003,7 +1063,7 @@
                 if (toggleDetail) toggleDetail.checked = false;
 
                 // 캐릭터 복구
-                if (selectedOptions.character) {
+                if (selectedOptions.character && currentStep >= 4) {
                     const charData = characterDB.find(c => c.name === selectedOptions.character);
                     if (charData) {
                         document.getElementById("bg-layer").style.backgroundImage = `url('${charData.image}')`;
@@ -1011,8 +1071,6 @@
                         document.getElementById("stat-panel").style.display = "block";
                     }
                 }
-                
-                // ★ 수정됨: 새로고침 시(저장 데이터 불러올 때) 광추 흔적 띄우던 로직도 완전히 삭제했습니다.
                 
                 if (currentStep >= 10) { 
                     document.getElementById("dropdown-area").style.display = "none";
@@ -1027,6 +1085,7 @@
                     
                     box.querySelector('.four-line-chk').checked = boxData.fourLine;
                     if (boxData.main && box.querySelector('.main-stat-select')) {
+                        // 예전 저장 데이터에 '선택안함'이 없던 시절의 값이라도 정상 복구
                         box.querySelector('.main-stat-select').value = boxData.main;
                     }
                     
@@ -1058,6 +1117,7 @@
                         }, 10);
                     });
                 });
+                calculateAndShowStats();
             } catch (e) {
                 console.error("저장된 데이터를 불러오는 중 오류 발생:", e);
                 localStorage.removeItem('hsrSimulatorSave');
